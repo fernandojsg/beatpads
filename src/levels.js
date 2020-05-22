@@ -11,7 +11,6 @@ export const levels = [
     top: 1,
     blocks: [
       {
-
       }
     ]
   }

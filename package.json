@@ -35,8 +35,9 @@
   },
   "dependencies": {
     "ecsy": "^0.2.3",
-    "ecsy-three": "^0.1.0",
+    "ecsy-three": "0.0.4",
     "three": "^0.116.1",
+    "troika-3d-text": "^0.25.0",
     "webxr-polyfill": "^2.0.1"
   },
   "devDependencies": {

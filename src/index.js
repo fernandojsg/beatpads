@@ -182,7 +182,7 @@ function initGame() {
     mediaElement.loop = true;
     mediaElement.play();
 
-    document.querySelector("canvas").addEventListener("click", () => {
+    document.body.addEventListener("click", () => {
       console.log("Playing");
       mediaElement.play();
     });

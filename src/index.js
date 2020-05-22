@@ -182,6 +182,10 @@ function initGame() {
     mediaElement.loop = true;
     mediaElement.play();
 
+    document.querySelector("canvas").addEventListener("click", () => {
+      mediaElement.play();
+    });
+
     audio.setMediaElementSource(mediaElement);
 
     var fftSize = 128;

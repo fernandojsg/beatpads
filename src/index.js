@@ -46,9 +46,12 @@ import {
   LevelManager,
   OutputSystem,
   RotatingSystem,
+  CollisionSystem,
   TargetSystem,
   RaycasterSystem,
   UISystem,
+  SoundsSystem,
+  GameplaySystem,
   VRControllerInteraction
 } from "./Systems/systems.mjs";
 
@@ -102,15 +105,18 @@ function initGame() {
     .registerSystem(VRControllerInteraction)
     .registerSystem(CameraRigSystem)
     .registerSystem(ElementSystem)
+    .registerSystem(CollisionSystem)
     .registerSystem(SoundSystem)
+    .registerSystem(SoundsSystem)
     .registerSystem(VisibilitySystem)
     .registerSystem(TargetSystem)
     .registerSystem(SDFTextSystem)
     .registerSystem(RotatingSystem)
     .registerSystem(OutputSystem)
     .registerSystem(TextGeometrySystem)
-    .registerSystem(GLTFLoaderSystem)
-    .registerSystem(GeometrySystem);
+    .registerSystem(GameplaySystem)
+    .registerSystem(GeometrySystem)
+    .registerSystem(GLTFLoaderSystem);
 
   let data = initialize(world, { vr: true });
 

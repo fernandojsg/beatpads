@@ -200,7 +200,21 @@ export class Floor extends TagComponent {}
 //-----------------
 
 export class Pad {
-  constructor() {
+  constructor() {}
+}
 
+export class Sounds {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.mappings = {};
+  }
+
+  playSound(name) {
+    if (this.mappings[name]) {
+      this.mappings[name].soundBuffer.play();
+    }
   }
 }

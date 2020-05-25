@@ -11,3 +11,6 @@ export { VRControllerInteraction } from "./VRControllerInteraction.js";
 export { UISystem } from "./UISystem.js";
 export { RaycasterSystem } from "./RaycasterSystem.js";
 export { AudioGeneratorSystem } from "./AudioGeneratorSystem.js";
+export { GameplaySystem } from "./GameplaySystem.js";
+export { CollisionSystem } from "./CollisionSystem.js";
+export { SoundsSystem } from "./SoundsSystem.js";

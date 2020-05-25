@@ -85,6 +85,38 @@ export class LevelManager extends System {
       }
     }
 
+    const METAL = 0;
+    const RUBBER = 1;
+    const WOOD = 2;
+    const STATIC = 3;
+
+    let N = 100;
+    for (var i = 0; i < N; i++) {
+      let w = 2;
+      let h = 2;
+      let x = w / 2 - Math.random() * w;
+      let y = h / 2 - Math.random() * h + 2;
+
+      let element = {
+        type: 3, //Math.floor(Math.random() * 4),
+        position: new THREE.Vector3(x, y, -radius - Math.random() * 10 - i),
+        rotation: new THREE.Vector3(0, 0, 0)
+      };
+
+      this.world
+        .createEntity()
+        .addComponent(Element, {
+          type: element.type
+        })
+        .addComponent(Transform, {
+          position: element.position,
+          rotation: element.rotation
+        })
+        .addComponent(LevelItem)
+        .addComponent(Parent, { value: levelGroup });
+    }
+    // Boxes (draggable and fixed)
+
     /*
     level.generators.forEach(g => {
       let linearVelocity = new THREE.Vector3()

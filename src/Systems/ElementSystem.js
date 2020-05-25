@@ -7,11 +7,13 @@ import {
   FloorCollided,
   Floor,
   Shape,
+  Object3D,
   Ball,
   Colliding,
   CollisionStart,
   Draggable,
-  Sound
+  Sound,
+  Sounds
 } from "../Components/components.js";
 import * as Materials from "../materials.js";
 
@@ -28,7 +30,7 @@ const elementTypes = [
     material: new THREE.MeshPhongMaterial({
       map: Materials.textures["metal.jpg"],
       envMap: Materials.environmentMap,
-      specularMap: Materials.textures['metal_spec.jpg'],
+      specularMap: Materials.textures["metal_spec.jpg"],
       shininess: 70,
       specular: new THREE.Color(0x888888),
       reflectivity: 0.7
@@ -55,9 +57,9 @@ const elementTypes = [
     scale: 1,
     sound: "wood.ogg",
     material: new THREE.MeshPhongMaterial({
-      map: Materials.textures['wood.png'],
+      map: Materials.textures["wood.png"],
       envMap: Materials.environmentMap,
-      specularMap: Materials.textures['wood_spec.jpg'],
+      specularMap: Materials.textures["wood_spec.jpg"],
       shininess: 20,
       specular: new THREE.Color(0x666666),
       reflectivity: 0.5
@@ -84,40 +86,52 @@ export class ElementSystem extends System {
 
       const config = elementTypes[component.type];
 
-      entity
-        .addComponent(GLTFLoader, {
-          url: "assets/models/" + config.model + ".glb",
-          onLoaded: model => {
-            let mesh = model.children[0];
-            let geometry = mesh.geometry;
+      //var texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
 
-            if (config.scale) {
-              geometry.scale(config.scale, config.scale, config.scale);
-              geometry.computeBoundingBox();
-            }
+      entity.addComponent(GLTFLoader, {
+        url: "assets/models/" + config.model + ".glb",
+        onLoaded: model => {
+          let mesh = model.children[0];
+          let geometry = mesh.geometry;
 
-            // Compute the boundingbox size to create the physics shape for it
-            let min = geometry.boundingBox.min;
-            let max = geometry.boundingBox.max;
-
-            let w = Math.abs(max.x - min.x);
-            let h = Math.abs(max.y - min.y);
-            let d = Math.abs(max.z - min.z);
-
-            mesh.material = config.material.clone();
-
-            entity.addComponent(Shape, {
-              primitive: "box",
-              width: w,
-              height: h,
-              depth: d
-            });
-
-            entity.addComponent(Sound, {
-              url: "assets/sounds/" + config.sound
-            });
+          if (config.scale) {
+            geometry.scale(config.scale, config.scale, config.scale);
+            geometry.computeBoundingBox();
           }
-        });
+
+          // Compute the boundingbox size to create the physics shape for it
+          let min = geometry.boundingBox.min;
+          let max = geometry.boundingBox.max;
+
+          let w = Math.abs(max.x - min.x);
+          let h = Math.abs(max.y - min.y);
+          let d = Math.abs(max.z - min.z);
+
+          mesh.material = config.material.clone();
+
+          entity.addComponent(Shape, {
+            primitive: "box",
+            width: w,
+            height: h,
+            depth: d
+          });
+
+          entity.addComponent(Sounds, {
+            mappings: {
+              hit: {
+                url: "assets/sounds/336933__free-rush__coin4.ogg",
+                volume: 2,
+              },
+              miss: {
+                url: "assets/sounds/miss.ogg",
+                volume: 2,
+              }
+            }
+          });
+
+          entity.getMutableComponent(Object3D).value = mesh;
+        }
+      });
 
       if (config.draggable) {
         entity.addComponent(Draggable);

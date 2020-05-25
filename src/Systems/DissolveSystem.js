@@ -1,5 +1,5 @@
 import { System } from "ecsy";
-import { Ball, Dissolve, Object3D } from "../Components/components.js";
+import { Element, Dissolve, Object3D } from "../Components/components.js";
 
 export class DissolveSystem extends System {
   execute(delta) {
@@ -10,9 +10,24 @@ export class DissolveSystem extends System {
       var entity = entities[i];
       var dissolve = entity.getMutableComponent(Dissolve);
       var object = entity.getComponent(Object3D).value;
-      if (!object.material) {
+      let material = object.material;
+      if (!material) {
         continue;
       }
+
+      let dissolve01 = 1 - dissolve.value;
+
+      let s = 1 + dissolve01;
+
+      if (dissolve.type === 0) {
+        material.emissive.r = dissolve.value;
+        object.scale.set(s,s,s);
+      } else {
+        material.emissive.g = dissolve.value;
+        s = 1/s;
+        object.scale.set(s,s,s);
+      }
+
       object.material.opacity = dissolve.value;
       object.material.transparent = true;
 
@@ -26,7 +41,7 @@ export class DissolveSystem extends System {
 
 DissolveSystem.queries = {
   entities: {
-    components: [Ball, Dissolve, Object3D],
+    components: [Element, Dissolve, Object3D],
     listen: {
       added: true
     }

@@ -12,6 +12,12 @@ export default class PositionalAudioPolyphonic extends THREE.Object3D {
     }
   }
 
+  setVolume(volume) {
+    this.children.forEach(sound => {
+      sound.setVolume(volume);
+    });
+  }
+
   setBuffer(buffer) {
     this.children.forEach(sound => {
       sound.setBuffer(buffer);

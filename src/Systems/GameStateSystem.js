@@ -3,20 +3,19 @@ import { levels } from "../levels.js";
 import { Text } from "ecsy-three";
 import * as THREE from "three";
 import {
-  BallGenerator,
   Dissolve,
   Sound,
   Stop,
   Object3D,
+  Sounds,
   Raycaster,
   Play,
   Visible,
-  Target,
+  Collided,
+  Missed,
   Cleared,
   Active,
   Level,
-  Ball,
-  FloorCollided,
   GameState
 } from "../Components/components.js";
 import { LevelManager } from "../Systems/systems.mjs";
@@ -84,9 +83,6 @@ export class GameStateSystem extends System {
 
     this.updateTexts(gameState);
 
-    this.queries.ballGenerators.results.forEach(generator => {
-      generator.addComponent(Active);
-    });
 /*
     let panelInfoEntity = this.world.entityManager.getEntityByName("panelInfo");
     panelInfoEntity.addComponent(Stop);
@@ -126,8 +122,6 @@ export class GameStateSystem extends System {
     let elapsedTimeCurrent = performance.now() - gameState.levelStartTime;
     let elapsedTimeTotal = performance.now() - gameState.gameStartTime;
 
-    let worldSingleton = this.world.entityManager.getEntityByName("singleton");
-
     let timer = this.world.entityManager.getEntityByName("timer");
     if (timer) {
       timer.getMutableComponent(Text).text = new Date(elapsedTimeCurrent)
@@ -142,87 +136,39 @@ export class GameStateSystem extends System {
         .substr(14, 5);
     }
 
-    // If a ball collided with the floor, reactivate the generator to throw another ball
-    this.queries.ballFloorCollided.added.forEach(ball => {
-      // @todo this.component.numBallsFailed++
-      gameState.numBallsFailed++;
-
-      this.world.entityManager
-        .getEntityByName("numberBalls")
-        .getMutableComponent(
-          Text
-        ).text = `${gameState.numBallsFailed}`;
-
-      // @todo here we should just activate the collided ball's generator
-      // Wait 2s before reactivating the ball generator
-      let currentLevel = worldSingleton.getComponent(Level).value;
-
-      this.queries.ballGenerators.results.forEach(generator => {
-        generator.addComponent(Play);
+    this.queries.padsCollided.added.forEach(pad => {
+      pad.addComponent(Dissolve, {
+        type: 1,
+        speed: 2
       });
+      let sounds = pad.getComponent(Sounds);
+      sounds.playSound("hit");
 
-      setTimeout(() => {
-        if (worldSingleton.getComponent(Level).value !== currentLevel) {
-          return;
-        }
-        this.queries.ballGenerators.results.forEach(generator => {
-          generator.addComponent(Active);
-        });
-      }, 1900);
+      let gameState = this.queries.gameState.results[0].getMutableComponent(
+        GameState
+      );
 
-      setTimeout(() => {
-        if (
-          !ball ||
-          !ball.alive ||
-          worldSingleton.getComponent(Level).value !== currentLevel
-        ) {
-          return;
-        }
-      }, 2000);
-
-      ball.addComponent(Dissolve);
-    });
-
-    this.queries.targetCleared.added.forEach(entity => {
-      entity.getComponent(Sound).sound.play();
-
-      setTimeout(() => {
-        var levelComponent = worldSingleton.getMutableComponent(Level);
-        if (levelComponent.value === levels.length - 1) {
-          levelComponent.value = 1;
-          this.finish();
-        } else {
-          levelComponent.value++;
-          gameState.levelStartTime = performance.now();
-
-          gameState.levelFinished = false;
-        }
-      }, 2000);
-
-      // threeContext.scene.background.set(0x00ff00);
-      gameState.levelFinished = true;
+      gameState.life++;
+      gameState.points += gameState.combo;
+      gameState.combo++;
+      if (gameState.combo > 8) {
+        gameState.combo = 8;
+      }
     });
   }
 }
 
 GameStateSystem.queries = {
-  ballGenerators: { components: [BallGenerator] },
+  padsCollided: {
+    components: [Collided],
+    listen: {
+      added: true
+    }
+  },
   gameState: {
     components: [GameState],
     listen: {
       changed: true
-    }
-  },
-  ballFloorCollided: {
-    components: [Ball, FloorCollided],
-    listen: {
-      added: true
-    }
-  },
-  targetCleared: {
-    components: [Target, Cleared],
-    listen: {
-      added: true
     }
   },
   raycasters: {

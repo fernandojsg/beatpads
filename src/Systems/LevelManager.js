@@ -3,14 +3,9 @@ import * as THREE from "three";
 import { Text, Position } from "ecsy-three";
 import {
   Level,
-  Target,
-  Play,
-  Sound,
   Transform,
   GLTFLoader,
   GameState,
-  BallGenerator,
-  Draggable,
   Active,
   Parent,
   Animation,
@@ -20,12 +15,6 @@ import {
   FTTUpdatable
 } from "../Components/components.js";
 import { levels } from "../levels.js";
-import * as Materials from "../materials.js";
-import { Vector3 } from "three";
-
-const urlParams = new URLSearchParams(window.location.search);
-var editMode = urlParams.has("edit");
-var smallCylinder;
 
 export class LevelManager extends System {
   execute() {
@@ -58,10 +47,6 @@ export class LevelManager extends System {
     let levelGroup = this.world.entityManager.getEntityByName("levelGroup");
 
     this.clearCurrentLevel();
-    var level = levels[levelId];
-
-    // Generators
-    let worldSingleton = this.world.entityManager.getEntityByName("singleton");
 
     const SIZE = 5;
     const ANGLE = Math.PI / 10;
@@ -90,11 +75,6 @@ export class LevelManager extends System {
       }
     }
 
-    const METAL = 0;
-    const RUBBER = 1;
-    const WOOD = 2;
-    const STATIC = 3;
-
     let radius = 10;
 
     let N = 100;
@@ -122,120 +102,6 @@ export class LevelManager extends System {
         .addComponent(LevelItem)
         .addComponent(Parent, { value: levelGroup });
     }
-    // Boxes (draggable and fixed)
-
-    /*
-    level.generators.forEach(g => {
-      let linearVelocity = new THREE.Vector3()
-        .copy(g.linearVelocity)
-        .normalize();
-
-      // Ball generator
-      let ballGenerator = this.world
-        .createEntity()
-        .addComponent(BallGenerator, {
-          position: g.position,
-          linearVelocity: g.linearVelocity
-        })
-        .addComponent(LevelItem)
-        .addComponent(GLTFLoader, {
-          url: "assets/models/cannon.glb",
-          onLoaded: (model, gltf) => {
-            //model.scale.multiplyScalar(-1);
-            model.lookAt(linearVelocity);
-            model.getObjectByName(
-              "cannon"
-            ).material = new THREE.MeshPhongMaterial({
-              map: Materials.textures["cannon.jpg"],
-              envMap: Materials.environmentMap,
-              reflectivity: 0.2,
-              specularMap: Materials.textures["cannon_spec.jpg"],
-              shininess: 50,
-              specular: new THREE.Color(0x333333)
-            });
-
-            var yellowMat = new THREE.MeshBasicMaterial({ color: 0xe7c223 });
-
-            model.getObjectByName("explosion").material = yellowMat;
-            model.getObjectByName("sparks").material = yellowMat;
-
-            let mixer = (model.userData.mixer = new THREE.AnimationMixer(
-              model
-            ));
-            const clip = THREE.AnimationClip.findByName(
-              gltf.animations,
-              "cannonAction"
-            );
-            const action = mixer.clipAction(clip, model);
-            //action.loop = THREE.LoopOnce;
-            model.userData.animationClip = action;
-          }
-        })
-        .addComponent(Animation, { duration: 2.35 })
-        .addComponent(Sound, { url: "assets/sounds/cannon.ogg" })
-        .addComponent(Position, {
-          value: new THREE.Vector3().copy(g.position)
-        })
-        .addComponent(LevelItem)
-        .addComponent(Parent, { value: levelGroup });
-
-      if (editMode) {
-        ballGenerator.addComponent(Draggable);
-      }
-
-      if (worldSingleton.getComponent(GameState).playing) {
-        // ballGenerator.addComponent(Active);
-        setTimeout(() => {
-          ballGenerator.addComponent(Play);
-
-          setTimeout(() => {
-            ballGenerator.addComponent(Active);
-          }, 1900);
-        }, 2000);
-      }
-    });
-
-    // Targets
-    level.targets.forEach(t => {
-      let target = this.world
-        .createEntity()
-        .addComponent(Target)
-        .addComponent(GLTFLoader, {
-          url: "assets/models/target.glb",
-          onLoaded: model => {
-            model.children[0].material = new THREE.MeshPhongMaterial({
-              map: Materials.textures["target.png"],
-              envMap: Materials.environmentMap,
-              reflectivity: 0.2
-            });
-          }
-        })
-        .addComponent(Transform, {
-          position: t.position,
-          rotation: t.rotation
-        })
-        .addComponent(LevelItem)
-        .addComponent(Parent, { value: levelGroup })
-        .addComponent(Sound, { url: "assets/sounds/target.ogg" });
-
-      if (editMode) {
-        target.addComponent(Draggable);
-      }
-    });
-
-    // Boxes (draggable and fixed)
-    level.elements.forEach(element => {
-      this.world
-        .createEntity()
-        .addComponent(Element, { type: element.type })
-        .addComponent(Transform, {
-          position: element.position,
-          rotation: element.rotation
-        })
-        .addComponent(LevelItem)
-        .addComponent(Parent, { value: levelGroup });
-    });
-    */
   }
 }
 

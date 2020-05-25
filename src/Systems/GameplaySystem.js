@@ -4,6 +4,7 @@ import {
   Element,
   Shape,
   Sounds,
+  GameState,
   Object3D,
   Transform,
   GLTFModel,
@@ -29,6 +30,23 @@ export class GameplaySystem extends System {
 
         let sounds = entity.getComponent(Sounds);
         sounds.playSound("miss");
+
+        let gameState = this.queries.gameState.results[0].getMutableComponent(
+          GameState
+        );
+
+        gameState.failures++;
+        gameState.life -= 2;
+        gameState.combo--;
+        if (gameState.combo < 1) {
+          gameState.combo = 1;
+        }
+
+        if (gameState.life <= 0) {
+          console.log("Game over!");
+        }
+
+        console.log(gameState);
       }
     }
   }
@@ -42,5 +60,8 @@ GameplaySystem.queries = {
       removed: true,
       changed: true // [Component]
     }
+  },
+  gameState: {
+    components: [GameState]
   }
 };

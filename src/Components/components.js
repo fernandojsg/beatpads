@@ -13,6 +13,7 @@ export {
   Draggable,
   Dragging,
   Environment,
+  ControllerConnected,
   Geometry,
   GLTFLoader,
   GLTFModel,
@@ -50,7 +51,6 @@ export class Level {
   }
 }
 
-export class FloorCollided extends TagComponent {}
 export class Cleared extends TagComponent {}
 
 export class Element {
@@ -111,49 +111,18 @@ export class GameState {
     this.reset();
   }
   reset() {
+    this.life = 100;
+    this.points = 0;
+    this.failures = 0;
+    this.combo = 1;
+
     this.playing = false;
     this.prevPlaying = false;
     this.levelFinished = false;
-    this.numBallsFailed = 0;
-    this.numBallsTotal = 0;
+
     this.levelStartTime = 0;
     this.gameStartTime = 0;
   }
-}
-
-export class BallGenerator {
-  constructor() {
-    this.position = new THREE.Vector3();
-    this.linearVelocity = new THREE.Vector3();
-  }
-
-  copy(src) {
-    this.position.copy(src.position);
-    this.linearVelocity.copy(src.linearVelocity);
-  }
-  reset() {}
-}
-
-export class Ball {
-  constructor() {
-    this.radius = 0.4;
-  }
-
-  reset() {
-    this.radius = 0.4;
-  }
-
-  copy(src) {
-    this.radius = src.radius;
-  }
-}
-
-export class Target {
-  constructor() {
-    this.position = new THREE.Vector3();
-  }
-
-  reset() {}
 }
 
 export class UI extends TagComponent {}
@@ -218,3 +187,6 @@ export class Sounds {
     }
   }
 }
+
+export class Collided extends TagComponent {}
+export class Missed extends TagComponent {}

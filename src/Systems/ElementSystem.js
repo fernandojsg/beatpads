@@ -4,7 +4,6 @@ import {
   Element,
   GLTFLoader,
   Active,
-  FloorCollided,
   Floor,
   Shape,
   Object3D,
@@ -137,7 +136,7 @@ export class ElementSystem extends System {
         entity.addComponent(Draggable);
       }
     }
-
+/*
     this.queries.colliding.results.forEach(entity => {
       let collision = entity.getComponent(Colliding);
       let hasBall = entity.hasComponent(Ball);
@@ -157,6 +156,7 @@ export class ElementSystem extends System {
         }
       }
     });
+*/
   }
 }
 

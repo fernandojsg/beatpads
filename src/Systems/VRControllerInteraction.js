@@ -8,6 +8,7 @@ import {
   Dragging,
   Object3D,
   Raycaster,
+  ControllerConnected,
   RaycastReceiver,
   WebGLRendererContext
 } from "../Components/components.js";

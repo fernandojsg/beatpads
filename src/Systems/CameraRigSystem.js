@@ -49,11 +49,11 @@ export class CameraRigSystem extends System {
 
       // Controllers
       this.world
-        .createEntity()
+        .createEntity("left")
         .addComponent(VRController, { id: 0 })
         .addComponent(Parent, { value: entity });
       this.world
-        .createEntity()
+        .createEntity("right")
         .addComponent(VRController, { id: 1 })
         .addComponent(Parent, { value: entity });
     });

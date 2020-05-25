@@ -38,16 +38,13 @@ window.THREE = THREE;
 
 import {
   AudioGeneratorSystem,
-  BallGeneratorSystem,
   CameraRigSystem,
   DissolveSystem,
   ElementSystem,
   GameStateSystem,
   LevelManager,
-  OutputSystem,
   RotatingSystem,
   CollisionSystem,
-  TargetSystem,
   RaycasterSystem,
   UISystem,
   SoundsSystem,
@@ -94,25 +91,22 @@ function initGame() {
   world
     .registerSystem(AudioGeneratorSystem)
     .registerSystem(InputSystem)
-    .registerSystem(GameStateSystem)
     .registerSystem(LevelManager)
     .registerSystem(AnimationSystem)
     .registerSystem(RaycasterSystem)
     .registerSystem(UISystem)
     .registerSystem(DissolveSystem)
-    .registerSystem(BallGeneratorSystem)
     .registerSystem(VRControllerSystem)
     .registerSystem(VRControllerInteraction)
     .registerSystem(CameraRigSystem)
     .registerSystem(ElementSystem)
     .registerSystem(CollisionSystem)
+    .registerSystem(GameStateSystem)
     .registerSystem(SoundSystem)
     .registerSystem(SoundsSystem)
     .registerSystem(VisibilitySystem)
-    .registerSystem(TargetSystem)
     .registerSystem(SDFTextSystem)
     .registerSystem(RotatingSystem)
-    .registerSystem(OutputSystem)
     .registerSystem(TextGeometrySystem)
     .registerSystem(GameplaySystem)
     .registerSystem(GeometrySystem)

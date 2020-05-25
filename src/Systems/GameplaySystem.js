@@ -13,19 +13,12 @@ import {
 export class GameplaySystem extends System {
   execute(delta, time) {
     const entities = this.queries.entities.results;
-    analyser.getFrequencyData();
-    let s = analyser.getAverageFrequency() / 256;
-
     for (let i = entities.length - 1; i >= 0; i--) {
       const entity = entities[i];
       const transform = entity.getMutableComponent(Transform);
       const element = entity.getMutableComponent(Element);
 
       const object3D = entity.getMutableComponent(Object3D).value;
-
-      let scale = 1 + s;
-      object3D.scale.set(scale, scale, scale);
-
 
       transform.position.z += delta * 2;
       if (transform.position.z > 0.2 && !entity.getComponent(Dissolve)) {

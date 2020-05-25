@@ -64,23 +64,28 @@ export class LevelManager extends System {
     let worldSingleton = this.world.entityManager.getEntityByName("singleton");
 
     const SIZE = 5;
-    const ANGLE = Math.PI/10;
+    const ANGLE = Math.PI / 10;
     var index = 0;
-    for (var x=0; x<SIZE; x++) {
-      for (var y=0; y<SIZE; y++) {
-        var geometry = new THREE.PlaneGeometry( 1.5, 1.5, 1 );
+    for (var x = 0; x < SIZE; x++) {
+      for (var y = 0; y < SIZE; y++) {
+        var geometry = new THREE.PlaneGeometry(1.5, 1.5, 1);
         const color = new THREE.Color();
-        const h = index/(SIZE*SIZE);
+        const h = index / (SIZE * SIZE);
         color.setHSL(h, 1.0, 0.5);
-        var material = new THREE.MeshBasicMaterial( {color: color, side: THREE.DoubleSide} );
-        var plane = new THREE.Mesh( geometry, material );
-        plane.rotateOnAxis(new THREE.Vector3(0, 1, 0), 2*ANGLE - x*ANGLE);
-        plane.translateY(1 + y*2);
+        var material = new THREE.MeshBasicMaterial({
+          color: color,
+          side: THREE.DoubleSide
+        });
+        var plane = new THREE.Mesh(geometry, material);
+        plane.rotateOnAxis(new THREE.Vector3(0, 1, 0), 2 * ANGLE - x * ANGLE);
+        plane.translateY(1 + y * 2);
         plane.translateZ(-10);
         plane.visible = false;
-        const pad = this.world
-          .createEntity()
-          .addComponent(FTTUpdatable, { mesh: plane, index: index, initialPos: plane.position.clone()});
+        const pad = this.world.createEntity().addComponent(FTTUpdatable, {
+          mesh: plane,
+          index: index,
+          initialPos: plane.position.clone()
+        });
         index++;
       }
     }
@@ -89,6 +94,8 @@ export class LevelManager extends System {
     const RUBBER = 1;
     const WOOD = 2;
     const STATIC = 3;
+
+    let radius = 10;
 
     let N = 100;
     for (var i = 0; i < N; i++) {

@@ -2,10 +2,12 @@ import { System } from "ecsy";
 import { levels } from "../levels.js";
 import { Text } from "ecsy-three";
 import * as THREE from "three";
+import TWEEN from "../vendor/tween.module.min.js";
 import {
   Dissolve,
   Sounds,
   Raycaster,
+  Object3D,
   Visible,
   Collided,
   Missed,
@@ -95,7 +97,9 @@ export class GameStateSystem extends System {
     let entity = this.world.entityManager.getEntityByName("stats");
 
     if (entity) {
-      entity.getMutableComponent(Text).text = `Life: ${gameState.life}\nPoints: ${gameState.points}\nCombo: ${gameState.combo}x\nFailures: ${gameState.failures}`;
+      entity.getMutableComponent(
+        Text
+      ).text = `Life: ${gameState.life}\nPoints: ${gameState.points}\nCombo: ${gameState.combo}x\nFailures: ${gameState.failures}`;
     }
   }
 
@@ -146,6 +150,20 @@ export class GameStateSystem extends System {
       if (gameState.combo > 8) {
         gameState.combo = 8;
       }
+
+      const object3D = pad.getComponent(Object3D).value;
+      var tween = new TWEEN.Tween(object3D.position)
+        .to(
+          {
+            x: object3D.position.x,
+            y: object3D.position.y,
+            z: object3D.position.z - 1
+          },
+          500
+        )
+        .onUpdate(() => {})
+        .easing(TWEEN.Easing.Quadratic.Out)
+        .start();
 
       this.updateTexts(gameState);
     });

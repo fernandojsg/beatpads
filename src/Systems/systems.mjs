@@ -10,3 +10,4 @@ export { CameraRigSystem } from "./CameraRigSystem.js";
 export { VRControllerInteraction } from "./VRControllerInteraction.js";
 export { UISystem } from "./UISystem.js";
 export { RaycasterSystem } from "./RaycasterSystem.js";
+export { AudioGeneratorSystem } from "./AudioGeneratorSystem.js";

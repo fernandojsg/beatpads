@@ -197,9 +197,11 @@ function initGame() {
     // var fftSize = 128;
     // window.analyser = new THREE.AudioAnalyser(audio, fftSize);
 
-    world
-      .createEntity("AudioGeneratorSystem")
-      .addComponent(FTTAnalizable, {url: "assets/376737_Skullbeatz___Bad_Cat_Maste.mp3", size: 256, minDb: 100})
+    world.createEntity("AudioGeneratorSystem").addComponent(FTTAnalizable, {
+      url: "assets/376737_Skullbeatz___Bad_Cat_Maste.mp3",
+      size: 256,
+      minDb: 100
+    });
 
     // let startButton = world
     //   .createEntity("startbutton")
@@ -304,6 +306,14 @@ function initGame() {
     //   .addComponent(Position, { value: new THREE.Vector3(0, 1.6, -2) })
     //   .addComponent(Parent, { value: data.entities.scene })
     //   .addComponent(Visible, { value: true });
+
+    world
+      .createEntity("stats")
+      .addComponent(Text, getTextParameters("", "#000000", 0.5, "center"))
+      .addComponent(Parent, { value: data.entities.scene })
+      .addComponent(Position, { value: new Vector3(3, 5, -6) })
+      .addComponent(Visible, { value: true });
+
     /*
     const panelLevel = world
       .createEntity("panelLevel")
@@ -418,8 +428,8 @@ function initGame() {
       .addComponent(Parent, { value: data.entities.scene })
       .addComponent(Animation, { duration: 2.35 })
       .addComponent(Position, { value: new Vector3(0, 2, -6) })
-      .addComponent(Visible, { value: false });
-*/
+      .addComponent(Visible, { value: true });
+      */
   }
 
   function createFloor(data) {
@@ -463,23 +473,3 @@ function initGame() {
 }
 
 initGame();
-
-/*
-
-// Object position helper
-
-window.addEventListener('wheel', ev => {
-  var v;
-  var pos = world.entityManager.getEntityByName("numberBalls").getMutableComponent(Position);
-  if (ev.shiftKey) {
-    v = pos.value.x + ev.deltaX / 100;
-    pos.value.x = v;
-  } else {
-    v = pos.value.y + ev.deltaY / 100;
-    pos.value.y = v;
-  }
-  console.log(
-    `${Math.floor(pos.value.x * 100) / 100}, ${Math.floor(pos.value.y * 100) / 100}`
-    );
-});
-*/

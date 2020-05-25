@@ -77,7 +77,7 @@ export class LevelManager extends System {
 
     let radius = 10;
 
-    let N = 100;
+    let N = 20;
     for (var i = 0; i < N; i++) {
       let w = 2;
       let h = 2;

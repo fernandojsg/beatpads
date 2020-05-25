@@ -1,10 +1,11 @@
-import { System } from "ecsy";
+import { System, Not } from "ecsy";
 import * as THREE from "three";
 import {
   VRController,
   Object3D,
   GameState,
   ControllerConnected,
+  Missed,
   Collided,
   Element
 } from "../Components/components.js";
@@ -44,7 +45,7 @@ export class CollisionSystem extends System {
 
 CollisionSystem.queries = {
   pads: {
-    components: [Element, Object3D],
+    components: [Element, Object3D, Not(Missed), Not(Collided)],
     listen: {
       added: true,
       removed: true,

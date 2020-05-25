@@ -4,17 +4,11 @@ import { Text } from "ecsy-three";
 import * as THREE from "three";
 import {
   Dissolve,
-  Sound,
-  Stop,
-  Object3D,
   Sounds,
   Raycaster,
-  Play,
   Visible,
   Collided,
   Missed,
-  Cleared,
-  Active,
   Level,
   GameState
 } from "../Components/components.js";
@@ -42,7 +36,7 @@ export class GameStateSystem extends System {
     this.queries.raycasters.results.forEach(entity => {
       entity.getMutableComponent(Raycaster).layerMask = 4;
     });
-/*
+    /*
     let panelInfoEntity = this.world.entityManager.getEntityByName("panelInfo");
     panelInfoEntity.addComponent(Play);
     let panel = panelInfoEntity.getComponent(Object3D).value.children[0];
@@ -83,7 +77,7 @@ export class GameStateSystem extends System {
 
     this.updateTexts(gameState);
 
-/*
+    /*
     let panelInfoEntity = this.world.entityManager.getEntityByName("panelInfo");
     panelInfoEntity.addComponent(Stop);
     let panel = panelInfoEntity.getComponent(Object3D);
@@ -98,12 +92,10 @@ export class GameStateSystem extends System {
   }
 
   updateTexts(gameState) {
-    let entity = this.world.entityManager.getEntityByName("numberBalls");
+    let entity = this.world.entityManager.getEntityByName("stats");
 
     if (entity) {
-      entity.getMutableComponent(
-        Text
-      ).text = `${gameState.numBallsFailed}/${gameState.numBallsTotal}`;
+      entity.getMutableComponent(Text).text = `Life: ${gameState.life}\nPoints: ${gameState.points}\nCombo: ${gameState.combo}x\nFailures: ${gameState.failures}`;
     }
   }
 
@@ -154,11 +146,49 @@ export class GameStateSystem extends System {
       if (gameState.combo > 8) {
         gameState.combo = 8;
       }
+
+      this.updateTexts(gameState);
+    });
+
+    this.queries.padsMissed.added.forEach(pad => {
+      pad.addComponent(Dissolve, {
+        type: 0,
+        speed: 2
+      });
+
+      let sounds = pad.getComponent(Sounds);
+      if (sounds) {
+        sounds.playSound("miss");
+      }
+
+      let gameState = this.queries.gameState.results[0].getMutableComponent(
+        GameState
+      );
+
+      gameState.failures++;
+      gameState.life -= 2;
+      gameState.combo--;
+      if (gameState.combo < 1) {
+        gameState.combo = 1;
+      }
+
+      if (gameState.life <= 0) {
+        console.log("Game over!");
+        this.finish();
+      }
+
+      this.updateTexts(gameState);
     });
   }
 }
 
 GameStateSystem.queries = {
+  padsMissed: {
+    components: [Missed],
+    listen: {
+      added: true
+    }
+  },
   padsCollided: {
     components: [Collided],
     listen: {

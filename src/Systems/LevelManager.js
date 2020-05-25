@@ -15,10 +15,13 @@ import {
   Parent,
   Animation,
   LevelItem,
-  Element
+  Element,
+  FTTAnalizable,
+  FTTUpdatable
 } from "../Components/components.js";
 import { levels } from "../levels.js";
 import * as Materials from "../materials.js";
+import { Vector3 } from "three";
 
 const urlParams = new URLSearchParams(window.location.search);
 var editMode = urlParams.has("edit");
@@ -33,12 +36,6 @@ export class LevelManager extends System {
     this.queries.levels.changed.forEach(entity => {
       this.initializeLevel(entity.getComponent(Level).value);
     });
-
-    analyser.getFrequencyData();
-    let s = analyser.getAverageFrequency() / 256;
-    smallCylinder.scale.x = s;
-    smallCylinder.scale.y = s;
-    //console.log(window.analyser.data);
   }
 
   clearCurrentLevel() {
@@ -66,34 +63,27 @@ export class LevelManager extends System {
     // Generators
     let worldSingleton = this.world.entityManager.getEntityByName("singleton");
 
-    let radius = 9.9;
-    let segments = 2;
-
-    let angle = THREE.MathUtils.degToRad(level.angle);
-    let height = level.height;
-    var geometry = new THREE.CylinderBufferGeometry(
-      radius,
-      radius,
-      height,
-      4,
-      4,
-      true,
-      0,
-      angle
-    );
-
-    geometry.rotateY(Math.PI - angle / 2);
-
-    var material = new THREE.MeshPhongMaterial({
-      color: 0x0000ff,
-      side: THREE.DoubleSide,
-      flatShading: true,
-      wireframe: true
-    });
-    var cylinder = new THREE.Mesh(geometry, material);
-    cylinder.position.y = height / 2 + level.top;
-    window.scene.add(cylinder);
-    smallCylinder = cylinder;
+    const SIZE = 5;
+    const ANGLE = Math.PI/10;
+    var index = 0;
+    for (var x=0; x<SIZE; x++) {
+      for (var y=0; y<SIZE; y++) {
+        var geometry = new THREE.PlaneGeometry( 1.5, 1.5, 1 );
+        const color = new THREE.Color();
+        const h = index/(SIZE*SIZE);
+        color.setHSL(h, 1.0, 0.5);
+        var material = new THREE.MeshBasicMaterial( {color: color, side: THREE.DoubleSide} );
+        var plane = new THREE.Mesh( geometry, material );
+        plane.rotateOnAxis(new THREE.Vector3(0, 1, 0), 2*ANGLE - x*ANGLE);
+        plane.translateY(1 + y*2);
+        plane.translateZ(-10);
+        plane.visible = false;
+        const pad = this.world
+          .createEntity()
+          .addComponent(FTTUpdatable, { mesh: plane, index: index, initialPos: plane.position.clone()});
+        index++;
+      }
+    }
 
     /*
     level.generators.forEach(g => {

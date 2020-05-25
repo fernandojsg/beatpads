@@ -19,7 +19,9 @@ import {
   Visible,
   UI,
   Button,
-  WebGLRendererContext
+  WebGLRendererContext,
+  FTTAnalizable,
+  FTTUpdatable
 } from "./Components/components.js";
 
 import * as Materials from "./materials.js";
@@ -35,6 +37,7 @@ window.Systems = Systems;
 window.THREE = THREE;
 
 import {
+  AudioGeneratorSystem,
   BallGeneratorSystem,
   CameraRigSystem,
   DissolveSystem,
@@ -60,7 +63,8 @@ import {
   SoundSystem,
   InputSystem,
   Text,
-  initialize
+  initialize,
+  Active
 } from "ecsy-three";
 import { Vector3 } from "three";
 
@@ -85,6 +89,7 @@ function initGame() {
   world = new World();
 
   world
+    .registerSystem(AudioGeneratorSystem)
     .registerSystem(InputSystem)
     .registerSystem(GameStateSystem)
     .registerSystem(LevelManager)
@@ -172,54 +177,58 @@ function initGame() {
 
     createScene(data);
 
-    var listener = new THREE.AudioListener();
+    // var listener = new THREE.AudioListener();
 
-    var audio = new THREE.Audio(listener);
+    // var audio = new THREE.Audio(listener);
 
-    var mediaElement = new Audio(
-      "assets/376737_Skullbeatz___Bad_Cat_Maste.mp3"
-    );
-    mediaElement.loop = true;
-    mediaElement.play();
+    // var mediaElement = new Audio(
+    //   "assets/376737_Skullbeatz___Bad_Cat_Maste.mp3"
+    // );
+    // mediaElement.loop = true;
+    // mediaElement.play();
 
-    document.body.addEventListener("click", () => {
-      console.log("Playing");
-      mediaElement.play();
-    });
+    // document.body.addEventListener("click", () => {
+    //   console.log("Playing");
+    //   mediaElement.play();
+    // });
 
-    audio.setMediaElementSource(mediaElement);
+    // audio.setMediaElementSource(mediaElement);
 
-    var fftSize = 128;
-    window.analyser = new THREE.AudioAnalyser(audio, fftSize);
+    // var fftSize = 128;
+    // window.analyser = new THREE.AudioAnalyser(audio, fftSize);
 
-    let startButton = world
-      .createEntity("startbutton")
-      .addComponent(UI)
-      .addComponent(GLTFLoader, {
-        url: "assets/models/startbutton.glb",
-        append: true,
-        onLoaded: model => {
-          model.children[0].material = Materials.UIMaterial;
-          model.children[0].material.color.setRGB(0.7, 0.7, 0.7);
-        }
-      })
-      .addComponent(Button, {
-        text: "START",
-        onClick: () => {
-          //startButton.removeComponent(Button);
-          mediaElement.play();
+    world
+      .createEntity("AudioGeneratorSystem")
+      .addComponent(FTTAnalizable, {url: "assets/376737_Skullbeatz___Bad_Cat_Maste.mp3", size: 256, minDb: 100})
 
-          world.getSystem(GameStateSystem).playGame();
-          setTimeout(() => {
-            startButton.addComponent(Visible, { value: false });
-          }, 300);
-          //this.world.entityManager.getEntityByName("singleton").getMutableComponent(GameState).playing = true;
-        }
-      })
-      .addComponent(Parent, { value: data.entities.scene })
-      .addComponent(Position, { value: new Vector3(0, 0.6, -1.5) })
-      .addComponent(Sound, { url: "assets/sounds/click.ogg" })
-      .addComponent(Visible, { value: !urlParams.has("autostart") });
+    // let startButton = world
+    //   .createEntity("startbutton")
+    //   .addComponent(UI)
+    //   .addComponent(GLTFLoader, {
+    //     url: "assets/models/startbutton.glb",
+    //     append: true,
+    //     onLoaded: model => {
+    //       model.children[0].material = Materials.UIMaterial;
+    //       model.children[0].material.color.setRGB(0.7, 0.7, 0.7);
+    //     }
+    //   })
+    //   .addComponent(Button, {
+    //     text: "START",
+    //     onClick: () => {
+    //       //startButton.removeComponent(Button);
+    //       mediaElement.play();
+
+    //       world.getSystem(GameStateSystem).playGame();
+    //       setTimeout(() => {
+    //         startButton.addComponent(Visible, { value: false });
+    //       }, 300);
+    //       //this.world.entityManager.getEntityByName("singleton").getMutableComponent(GameState).playing = true;
+    //     }
+    //   })
+    //   .addComponent(Parent, { value: data.entities.scene })
+    //   .addComponent(Position, { value: new Vector3(0, 0.6, -1.5) })
+    //   .addComponent(Sound, { url: "assets/sounds/click.ogg" })
+    //   .addComponent(Visible, { value: !urlParams.has("autostart") });
 
     if (urlParams.has("autostart")) {
       world.getSystem(GameStateSystem).playGame();
@@ -240,7 +249,24 @@ function initGame() {
       .createEntity("playingGroup")
       .addComponent(Object3D, { value: new THREE.Group() })
       .addComponent(Parent, { value: data.entities.scene })
-      .addComponent(Visible, { value: urlParams.has("autostart") });
+      .addComponent(Visible, { value: true });
+
+    // Create a pads pool
+    // const SIZE = 5;
+    // for (var i=0; i<SIZE*SIZE; i++) {
+    //   var geometry = new THREE.BoxBufferGeometry( 1.5, 1.5, 1 );
+    //   var material = new THREE.MeshBasicMaterial( { color: "#FFFFFF" } );
+    //   var mesh = new THREE.Mesh( geometry, material );
+    //   var pad = world.createEntity();
+    //   pad
+    //     .addComponent(FTTUpdatable)
+    //     .addComponent(Object3D, {
+    //         value: mesh
+    //     })
+    //     .addComponent(Transform)
+    //     .addComponent(Parent, { value: world.entityManager.getEntityByName("playingGroup") })
+    //     .addComponent(Active);
+    // }
 
     // Scene
     world
@@ -264,20 +290,20 @@ function initGame() {
       })
       .addComponent(Parent, { value: data.entities.scene });
 
-    world
-      .createEntity("help")
-      .addComponent(GLTFLoader, {
-        url: "assets/models/help.glb",
-        onLoaded: model => {
-          model.children[0].material.transparent = true;
-          model.children[0].material.map.magFilter = THREE.LinearFilter;
-          model.children[0].material.map.minFilter =
-            THREE.LinearMipmapLinearFilter;
-        }
-      })
-      .addComponent(Position, { value: new THREE.Vector3(0, 1.6, -2) })
-      .addComponent(Parent, { value: data.entities.scene })
-      .addComponent(Visible, { value: true });
+    // world
+    //   .createEntity("help")
+    //   .addComponent(GLTFLoader, {
+    //     url: "assets/models/help.glb",
+    //     onLoaded: model => {
+    //       model.children[0].material.transparent = true;
+    //       model.children[0].material.map.magFilter = THREE.LinearFilter;
+    //       model.children[0].material.map.minFilter =
+    //         THREE.LinearMipmapLinearFilter;
+    //     }
+    //   })
+    //   .addComponent(Position, { value: new THREE.Vector3(0, 1.6, -2) })
+    //   .addComponent(Parent, { value: data.entities.scene })
+    //   .addComponent(Visible, { value: true });
     /*
     const panelLevel = world
       .createEntity("panelLevel")

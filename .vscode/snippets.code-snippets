@@ -1,0 +1,71 @@
+{
+	// Place your beatpads workspace snippets here. Each snippet is defined under a snippet name and has a scope, prefix, body and 
+	// description. Add comma separated ids of the languages where the snippet is applicable in the scope field. If scope 
+	// is left empty or omitted, the snippet gets applied to all languages. The prefix is what is 
+	// used to trigger the snippet and the body will be expanded and inserted. Possible variables are: 
+	// $1, $2 for tab stops, $0 for the final cursor position, and ${1:label}, ${2:another} for placeholders. 
+	// Placeholders with the same ids are connected.
+	// Example:
+	// "Print to console": {
+	// 	"scope": "javascript,typescript",
+	// 	"prefix": "log",
+	// 	"body": [
+	// 		"console.log('$1');",
+	// 		"$2"
+	// 	],
+	// 	"description": "Log output to console"
+	// }
+
+	"ECSY System": {
+		"scope": "javascript",
+		"prefix": "sys",
+		"body": [
+			"export class ${1:SystemName} extends System {",
+			"	execute(delta, time) {",
+			"		const ${2:entities} = this.queries.${2:entities}.results;",
+			"",
+			"		for (let i = 0; i < ${2:entities}.length; i++) {"
+			"			const entity = ${2:entities}[i];",
+			"			const component = entity.getComponent(${3:Component});",
+			"		}",
+			"	}",
+			"}",
+			"",
+			"${1:SystemName}.queries = {",
+			"	${2:entities}: {"
+			"		components: [${3:Component}],",
+			"		listen: {",
+			"			added: true,"
+			"			removed: true,"
+			"			changed: true // [${3:Component}]"
+			"		}",
+			"	}",
+			"}"
+		],
+		"description": "Create an ECSY system"
+	},
+	"ECSY TagComponent": {
+		"scope": "javascript",
+		"prefix": "tag",
+		"body": [
+			"export class ${1:ComponentName} extends TagComponent {}"
+		],
+		"description": "Create an ECSY TagComponent"
+	},
+	"ECSY Component": {
+		"scope": "javascript",
+		"prefix": "comp",
+		"body": [
+			"export class ${1:ComponentName} {",
+			"	constructor() {",
+			"		this.${2:attribute} = ${3:'value'};",
+			"	}",
+			"",
+			"	reset() {",
+			"		this.${2:attribute} = ${3:'value'};",
+			"	}",
+			"}"
+		],
+		"description": "Create an ECSY TagComponent"
+	}
+}

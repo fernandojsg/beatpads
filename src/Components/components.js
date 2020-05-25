@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { TagComponent } from "ecsy";
+import { Vector3 } from "three";
 
 export {
   Active,
@@ -55,6 +56,32 @@ export class Cleared extends TagComponent {}
 export class Element {
   constructor() {}
   reset() {}
+}
+
+export class FTTAnalizable {
+  constructor() {
+    this.reset();
+  }
+  
+  reset() {
+    this.url = null;
+    this.size = 128;
+    this.sliceSize = 64;
+    this.minDb = 100;
+  }
+}
+
+export class FTTUpdatable {
+  constructor() {
+    this.reset();
+  }
+  
+  reset() {
+    this.mesh = null;
+    this.index = 0;
+    this.moving = false;
+    this.initialPos = new Vector3(0, 0, 0);
+  }
 }
 
 export class Rotating {

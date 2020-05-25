@@ -8,8 +8,6 @@ import {
   Level,
   Object3D,
   Parent,
-  ParentObject3D,
-  Animation,
   Floor,
   Scene,
   Position,
@@ -17,17 +15,12 @@ import {
   GLTFLoader,
   Transform,
   Visible,
-  UI,
-  Button,
   WebGLRendererContext,
-  FTTAnalizable,
-  FTTUpdatable
+  FTTAnalizable
 } from "./Components/components.js";
 
-import * as Materials from "./materials.js";
-
-import WebXRPolyfill from "webxr-polyfill";
-const polyfill = new WebXRPolyfill();
+//import WebXRPolyfill from "webxr-polyfill";
+//const polyfill = new WebXRPolyfill();
 
 // For debugging
 import * as Components from "./Components/components.js";
@@ -48,8 +41,7 @@ import {
   RaycasterSystem,
   UISystem,
   SoundsSystem,
-  GameplaySystem,
-  VRControllerInteraction
+  GameplaySystem
 } from "./Systems/systems.mjs";
 
 import {
@@ -97,7 +89,6 @@ function initGame() {
     .registerSystem(UISystem)
     .registerSystem(DissolveSystem)
     .registerSystem(VRControllerSystem)
-    .registerSystem(VRControllerInteraction)
     .registerSystem(CameraRigSystem)
     .registerSystem(ElementSystem)
     .registerSystem(CollisionSystem)
@@ -106,7 +97,6 @@ function initGame() {
     .registerSystem(SoundsSystem)
     .registerSystem(VisibilitySystem)
     .registerSystem(SDFTextSystem)
-    .registerSystem(RotatingSystem)
     .registerSystem(TextGeometrySystem)
     .registerSystem(GameplaySystem)
     .registerSystem(GeometrySystem)

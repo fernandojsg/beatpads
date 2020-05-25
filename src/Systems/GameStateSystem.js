@@ -1,7 +1,5 @@
 import { System } from "ecsy";
-import { levels } from "../levels.js";
 import { Text } from "ecsy-three";
-import * as THREE from "three";
 import TWEEN from "../vendor/tween.module.min.js";
 import {
   Dissolve,
@@ -16,6 +14,12 @@ import {
 } from "../Components/components.js";
 import { LevelManager } from "../Systems/systems.mjs";
 
+/**
+ * All the game state is controlled here:
+ * - the change between game states: start, playing and game over
+ * - update the score
+ * - compute the score and reaction when a pads is missed or collided
+ */
 export class GameStateSystem extends System {
   setVisibilityByName(name, value) {
     let entity = this.world.entityManager.getEntityByName(name);

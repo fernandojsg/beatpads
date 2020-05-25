@@ -5,11 +5,14 @@ import PositionalAudioPolyphonic from "../lib/PositionalAudioPolyphonic.js";
 
 const audioLoader = new THREE.AudioLoader();
 
+/**
+ * Handle positional audio loaders for `Sounds` component
+ */
 export class SoundsSystem extends System {
   init() {
     this.listener = new THREE.AudioListener();
   }
-  execute(delta) {
+  execute() {
     this.queries.sounds.added.forEach(entity => {
       const component = entity.getMutableComponent(Sounds);
 

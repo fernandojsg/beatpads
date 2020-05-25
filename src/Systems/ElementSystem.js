@@ -3,21 +3,12 @@ import * as THREE from "three";
 import {
   Element,
   GLTFLoader,
-  Active,
-  Floor,
   Shape,
   Object3D,
-  Ball,
-  Colliding,
   CollisionStart,
-  Draggable,
-  Sound,
   Sounds
 } from "../Components/components.js";
 import * as Materials from "../materials.js";
-
-const urlParams = new URLSearchParams(window.location.search);
-var editMode = urlParams.has("edit");
 
 const elementTypes = [
   {
@@ -67,7 +58,7 @@ const elementTypes = [
   {
     model: "static",
     restitution: 0.05,
-    draggable: editMode,
+    draggable: false,
     scale: 0.2,
     sound: "",
     material: new THREE.MeshLambertMaterial({
@@ -76,6 +67,9 @@ const elementTypes = [
   }
 ];
 
+/**
+ * The system add the components and gltf to the element
+ */
 export class ElementSystem extends System {
   execute() {
     var entitiesAdded = this.queries.entities.added;
@@ -119,11 +113,11 @@ export class ElementSystem extends System {
             mappings: {
               hit: {
                 url: "assets/sounds/336933__free-rush__coin4.ogg",
-                volume: 2,
+                volume: 2
               },
               miss: {
                 url: "assets/sounds/miss.ogg",
-                volume: 2,
+                volume: 2
               }
             }
           });
@@ -131,32 +125,7 @@ export class ElementSystem extends System {
           entity.getMutableComponent(Object3D).value = mesh;
         }
       });
-
-      if (config.draggable) {
-        entity.addComponent(Draggable);
-      }
     }
-/*
-    this.queries.colliding.results.forEach(entity => {
-      let collision = entity.getComponent(Colliding);
-      let hasBall = entity.hasComponent(Ball);
-      let ball = hasBall ? entity : collision.collidingWith[0];
-      let block = !hasBall ? entity : collision.collidingWith[0];
-
-      if (block.hasComponent(Floor)) {
-        if (ball.hasComponent(Active)) {
-          block.getComponent(Sound).sound.play();
-          ball.removeComponent(Active);
-          // Wait a bit before spawning a new bullet from the generator
-          ball.addComponent(FloorCollided);
-        }
-      } else {
-        if (block.hasComponent(Sound)) {
-          block.getComponent(Sound).sound.play();
-        }
-      }
-    });
-*/
   }
 }
 

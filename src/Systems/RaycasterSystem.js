@@ -9,14 +9,6 @@ import {
 
 export class RaycasterSystem extends System {
   execute() {
-    /*
-    for (let i = 0; i < entities.length; i++) {
-      const entity = entities[i];
-      const component = entity.getComponent(RaycastReceiver);
-      console.log(component);
-    }
-    */
-
     let inputState = this.queries.inputState.results[0].getComponent(
       InputState
     );

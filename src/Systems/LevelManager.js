@@ -16,6 +16,10 @@ import {
 } from "../Components/components.js";
 import { levels } from "../levels.js";
 
+/**
+ * This system initialize each level and transition between one to another
+ * It creates the elements, load the songs and prepare the pads
+ */
 export class LevelManager extends System {
   execute() {
     this.queries.levels.added.forEach(entity => {

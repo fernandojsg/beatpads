@@ -1,10 +1,8 @@
 export { GameStateSystem } from "./GameStateSystem.js";
 export { DissolveSystem } from "./DissolveSystem.js";
-export { RotatingSystem } from "./RotatingSystem.js";
 export { ElementSystem } from "./ElementSystem.js";
 export { LevelManager } from "./LevelManager.js";
 export { CameraRigSystem } from "./CameraRigSystem.js";
-export { VRControllerInteraction } from "./VRControllerInteraction.js";
 export { UISystem } from "./UISystem.js";
 export { RaycasterSystem } from "./RaycasterSystem.js";
 export { AudioGeneratorSystem } from "./AudioGeneratorSystem.js";

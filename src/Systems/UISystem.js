@@ -7,7 +7,6 @@ import {
   UI,
   Sound,
   Parent,
-  Geometry,
   Button,
   RaycastReceiver,
   Object3D
@@ -22,7 +21,7 @@ function setColor(object, color) {
 }
 
 export class UISystem extends System {
-  execute(delta, time) {
+  execute() {
     TWEEN.update();
 
     const entities = this.queries.entities;

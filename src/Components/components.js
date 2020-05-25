@@ -84,16 +84,6 @@ export class FTTUpdatable {
   }
 }
 
-export class Rotating {
-  constructor() {
-    this.speed = new THREE.Vector3(0, 0, 0);
-  }
-
-  reset() {
-    this.speed.set(0, 0, 0);
-  }
-}
-
 export class Dissolve {
   constructor() {
     this.value = 1;

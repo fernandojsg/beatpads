@@ -1,11 +1,17 @@
 import { System } from "ecsy";
 import { Element, Dissolve, Object3D } from "../Components/components.js";
 
+/**
+ * This system interates on `Elements` with the `Disolve` component on them
+ * and does a transition from the alpha from 1 to 0. And depending on the type
+ * it changes also the color and the scale:
+ *     - 0 (Miss): Red and expands the scale
+ *     - 1 (Hit): Green and collapses
+ */
 export class DissolveSystem extends System {
   execute(delta) {
     var entities = this.queries.entities.results;
 
-    //Queries
     for (let i = 0; i < entities.length; i++) {
       var entity = entities[i];
       var dissolve = entity.getMutableComponent(Dissolve);
@@ -15,17 +21,15 @@ export class DissolveSystem extends System {
         continue;
       }
 
-      let dissolve01 = 1 - dissolve.value;
-
-      let s = 1 + dissolve01;
+      let s = 2 - dissolve.value;
 
       if (dissolve.type === 0) {
         material.emissive.r = dissolve.value;
-        object.scale.set(s,s,s);
+        object.scale.set(s, s, s);
       } else {
         material.emissive.g = dissolve.value;
-        s = 1/s;
-        object.scale.set(s,s,s);
+        s = 1 / s;
+        object.scale.set(s, s, s);
       }
 
       object.material.opacity = dissolve.value;
@@ -33,7 +37,7 @@ export class DissolveSystem extends System {
 
       dissolve.value -= delta * dissolve.speed;
       if (dissolve.value <= 0) {
-        entity.remove();
+        entity.remove(); // @todo Take this out or at least put a condition on the dissolve element
       }
     }
   }
@@ -41,9 +45,6 @@ export class DissolveSystem extends System {
 
 DissolveSystem.queries = {
   entities: {
-    components: [Element, Dissolve, Object3D],
-    listen: {
-      added: true
-    }
+    components: [Element, Dissolve, Object3D]
   }
 };

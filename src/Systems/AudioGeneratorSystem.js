@@ -1,6 +1,5 @@
 import { System, Not } from "ecsy";
 import * as THREE from "three";
-import TWEEN from "../vendor/tween.module.min.js";
 import { levels } from "../levels.js";
 import {
   FTTAnalizable,
@@ -21,6 +20,7 @@ export class AudioGeneratorSystem extends System {
     this.level = null;
     this.angleY = 0;
     this.gameState = null;
+    this.data = null;
   }
 
   execute(delta) {
@@ -47,6 +47,7 @@ export class AudioGeneratorSystem extends System {
       this.source = audioCtx.createMediaElementSource(mediaElement);
       this.analyser = audioCtx.createAnalyser();
       this.analyser.fftSize = soundComp.value;
+      this.data = new Uint8Array(this.analyser.frequencyBinCount);
       this.source.loop = true;
       this.source.connect(this.analyser);
       this.source.connect(delay).connect(audioCtx.destination);
@@ -65,9 +66,8 @@ export class AudioGeneratorSystem extends System {
     });
 
     if (this.gameState && this.gameState.playing) {
-      var data = new Uint8Array(this.analyser.frequencyBinCount);
-      this.analyser.getByteFrequencyData(data);
-      this.processPass(delta, data);
+      this.analyser.getByteFrequencyData(this.data);
+      this.processPass(delta, this.data);
     }
   }
 

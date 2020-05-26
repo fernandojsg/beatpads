@@ -198,6 +198,15 @@ export class Moving {
     this.value = new THREE.Vector3(0, 0, 0);
   }
 }
-export class Lane extends TagComponent {}
+export class Lane {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.x = 0;
+    this.y = 0;
+  }
+}
 export class Collided extends TagComponent {}
 export class Missed extends TagComponent {}

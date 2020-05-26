@@ -74,7 +74,7 @@ export class LevelManager extends System {
 
   initializeObjectPools(level, parent) {
     // Create the pads pool
-    let poolSize = Math.round((level.sizeX * level.sizeY) / 2);
+    let poolSize = level.sizeX * level.sizeY;
     for (var i = 0; i < poolSize; i++) {
       this.world
         .createEntity()

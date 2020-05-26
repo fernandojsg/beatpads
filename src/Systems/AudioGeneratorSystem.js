@@ -18,6 +18,7 @@ export class AudioGeneratorSystem extends System {
   init() {
     this.source = null;
     this.analyser = null;
+    this.visualAnalyser = null;
     this.prevAvg = 0;
     this.deltaAccum = 0;
     this.level = null;
@@ -25,12 +26,16 @@ export class AudioGeneratorSystem extends System {
     this.playing = false;
     this.data = null;
     this.fft = null;
+    this.laneAvailable = null;
   }
 
   execute(delta) {
     this.queries.levels.added.forEach(entity => {
       this.level = levels[entity.getComponent(Level).value];
       this.angleY = Math.PI / (this.level.sizeX * 2) / 2;
+      this.laneAvailable = new Array(this.level.sizeX)
+        .fill(true)
+        .map(() => new Array(this.level.sizeY).fill(true));
     });
 
     this.queries.ffts.added.forEach(entity => {
@@ -60,10 +65,16 @@ export class AudioGeneratorSystem extends System {
         this.source = audioCtx.createMediaElementSource(mediaElement);
         this.analyser = audioCtx.createAnalyser();
         this.analyser.fftSize = this.fft.value;
+        this.visualAnalyser = audioCtx.createAnalyser();
+        this.visualAnalyser.fftSize = this.fft.value;
         this.data = new Uint8Array(this.analyser.frequencyBinCount);
+        this.visualData = new Uint8Array(this.analyser.frequencyBinCount);
         this.source.loop = true;
         this.source.connect(this.analyser);
-        this.source.connect(delay).connect(audioCtx.destination);
+        this.source
+          .connect(delay)
+          .connect(this.visualAnalyser)
+          .connect(audioCtx.destination);
         this.source.mediaElement.play();
       } else if (!gameState.playing) {
         this.playing = false;
@@ -72,17 +83,44 @@ export class AudioGeneratorSystem extends System {
     });
 
     if (this.playing) {
-      this.analyser.getByteFrequencyData(this.data);
-      this.processPass(delta, this.data);
-      this.updateVisualiser(delta, this.data);
+      this.processPass(delta);
+      this.updateVisualiser(delta);
     }
+
+    this.queries.availableLanes.added.forEach(entity => {
+      var lane = entity.getComponent(Lane);
+      this.laneAvailable[lane.x][lane.y] = true;
+    });
+    // Not working
+    this.queries.unavailableLanes.added.forEach(entity => {
+      var lane = entity.getComponent(Lane);
+      this.laneAvailable[lane.x][lane.y] = false;
+    });
+  }
+
+  findAvailableLane() {
+    var randX = 0;
+    var randY = 0;
+    if (this.laneAvailable.some(row => row.includes(true))) {
+      let found = false;
+      while (!found) {
+        randX = Math.round(Math.random() * (this.level.sizeX - 1));
+        randY = Math.round(Math.random() * (this.level.sizeY - 1));
+        if (this.laneAvailable[randX][randY]) {
+          found = true;
+        }
+      }
+    }
+
+    return new THREE.Vector2(randX, randY);
   }
 
   // Process the FFT data and starts the pads animation.
   // An inactive Pad from the pool is used, we should never hit the pool bottom?
-  processPass(delta, data) {
-    const sum = data.reduce((a, b) => a + b, 0);
-    const avg = sum / data.length || 0;
+  processPass(delta) {
+    this.analyser.getByteFrequencyData(this.data);
+    const sum = this.data.reduce((a, b) => a + b, 0);
+    const avg = sum / this.data.length || 0;
     if (this.prevAvg > avg && avg > this.level.avgDb) {
       if (this.deltaAccum > 1 / this.level.speed) {
         this.deltaAccum = 0;
@@ -90,34 +128,38 @@ export class AudioGeneratorSystem extends System {
           "Pads pool size: " + this.queries.availablePads.results.length
         );
         var entity = this.queries.availablePads.results[0];
-        var lane = this.queries.availableLanes.results[0];
-        if (!entity || !lane) {
+        var laneEntity = this.queries.availableLanes.results[0];
+        if (!entity || !laneEntity) {
           return;
         }
 
         entity.addComponent(Active);
-        lane.addComponent(Active);
+        laneEntity.addComponent(Active);
 
-        var laneObject = lane.getMutableComponent(Object3D);
+        var laneObject = laneEntity.getMutableComponent(Object3D);
         laneObject.value.visible = true;
 
         var object = entity.getMutableComponent(Object3D);
         object.value.visible = true;
 
-        var randX = Math.round(Math.random() * this.level.sizeX - 1);
-        var randY = Math.round(Math.random() * this.level.sizeY - 1);
+        var lanePos = this.findAvailableLane();
 
-        const hue = (randX * randY) / (this.level.sizeX * this.level.sizeY);
+        var lane = laneEntity.getMutableComponent(Lane);
+        lane.x = lanePos.x;
+        lane.y = lanePos.y;
+
+        const hue = Math.random();
         const color = new THREE.Color();
         color.setHSL(hue, 1.0, 0.5);
         object.value.material.color.set(color);
         object.value.material.emissive.set(color);
         laneObject.value.material.color.set(color);
 
-        const posY = 1 + randY * this.level.padSize;
+        const posY = 1 + lanePos.y * this.level.padSize * 2;
         const posZ = -this.level.speed;
         const rotY =
-          this.angleY * (this.level.sizeX / 2) - (randX + 1) * this.angleY;
+          this.angleY * (this.level.sizeX / 2) -
+          (lanePos.x + 0.5) * this.angleY;
 
         object.value.position.set(0, 0, 2);
         object.value.rotation.set(0, 0, 0);
@@ -129,19 +171,20 @@ export class AudioGeneratorSystem extends System {
         laneObject.value.position.set(0, 0, 2);
         laneObject.value.rotation.set(0, 0, 0);
         laneObject.value.rotateOnAxis(new THREE.Vector3(0, 1, 0), rotY);
-        laneObject.value.translateY(posY - this.level.padSize / 2);
+        laneObject.value.translateY(this.level.padSize / 2);
         laneObject.value.translateZ(posZ);
         laneObject.value.rotateOnAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
 
         var pad = entity.getMutableComponent(Pad);
-        pad.lane = lane;
+        pad.lane = laneEntity;
       }
       this.deltaAccum += delta;
     }
     this.prevAvg = avg;
   }
 
-  updateVisualiser(delta, data) {
+  updateVisualiser(delta) {
+    this.visualAnalyser.getByteFrequencyData(this.data);
     this.queries.visualizer.results.forEach(entity => {
       let visualizer = entity.getComponent(FFTVisualizable);
       let object = entity.getComponent(Object3D);
@@ -149,10 +192,10 @@ export class AudioGeneratorSystem extends System {
       const width = visualizer.width;
       const height = visualizer.height;
       context.clearRect(0, 0, width, height);
-      const barWidth = width / data.length;
-      for (let i = 0; i < data.length; i++) {
-        const barHeight = (data[i] / 255) * height;
-        const hue = Math.round((i / data.length) * 360);
+      const barWidth = width / this.data.length;
+      for (let i = 0; i < this.data.length; i++) {
+        const barHeight = (this.data[i] / 255) * height;
+        const hue = Math.round((i / this.data.length) * 360);
         context.globalAlpha = 1;
         context.fillStyle = `hsl(${hue}, 100%, 50%)`;
         context.fillRect(i * barWidth, height - barHeight, barWidth, barHeight);
@@ -175,7 +218,16 @@ AudioGeneratorSystem.queries = {
     components: [FFTUpdatable, Not(Moving), Not(Active)]
   },
   availableLanes: {
-    components: [Lane, Not(Active)]
+    components: [Lane, Not(Active)],
+    listen: {
+      added: true
+    }
+  },
+  unavailableLanes: {
+    components: [Lane, Active],
+    listen: {
+      added: true
+    }
   },
   levels: {
     components: [Level],

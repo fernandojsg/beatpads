@@ -8,7 +8,7 @@ import {
   Moving,
   Object3D,
   Level,
-  FTTUpdatable,
+  FFTUpdatable,
   Active,
   Dissolve
 } from "../Components/components.js";
@@ -35,7 +35,7 @@ export class GameplaySystem extends System {
       const object = entity.getMutableComponent(Object3D);
 
       object.value.translateZ(delta * this.speed);
-      if (object.value.position.z > 0.2) {
+      if (object.value.position.z > 1) {
         entity.addComponent(Missed);
         entity.removeComponent(Moving);
       }
@@ -83,13 +83,13 @@ GameplaySystem.queries = {
     }
   },
   inactivePads: {
-    components: [FTTUpdatable, Object3D, Not(Active)],
+    components: [FFTUpdatable, Object3D, Not(Active)],
     listen: {
       added: true
     }
   },
   dissolvingPads: {
-    components: [FTTUpdatable, Object3D, Dissolve],
+    components: [FFTUpdatable, Object3D, Dissolve],
     listen: {
       added: true
     }

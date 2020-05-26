@@ -3,7 +3,8 @@ import {
   Element,
   Dissolve,
   Object3D,
-  Active
+  Active,
+  Pad
 } from "../Components/components.js";
 
 /**
@@ -26,23 +27,32 @@ export class DissolveSystem extends System {
         continue;
       }
 
-      let s = 2 - dissolve.value;
+      // let s = dissolve.value;
 
       if (dissolve.type === 0) {
-        material.emissive.r = dissolve.value;
-        object.scale.set(s, s, s);
+        if (material.dissolve) {
+          material.emissive.r = dissolve.value;
+        }
+        // object.scale.set(s, s, s);
       } else {
-        material.emissive.g = dissolve.value;
-        s = 1 / s;
-        object.scale.set(s, s, s);
+        if (material.dissolve) {
+          material.emissive.g = dissolve.value;
+        }
+        // s = 1 / s;
+        // object.scale.set(s, s, s);
       }
 
-      object.material.opacity = dissolve.value;
+      object.material.opacity = dissolve.value * 2;
       object.material.transparent = true;
 
       dissolve.value -= delta * dissolve.speed;
       if (dissolve.value <= 0) {
+        object.material.opacity = 1;
         entity.removeComponent(Dissolve);
+        if (entity.hasComponent(Pad)) {
+          let lane = entity.getComponent(Pad).lane;
+          lane.removeComponent(Active);
+        }
         entity.removeComponent(Active);
         object.material.transparent = false;
       }
@@ -52,6 +62,6 @@ export class DissolveSystem extends System {
 
 DissolveSystem.queries = {
   entities: {
-    components: [Element, Dissolve, Object3D, Active]
+    components: [Dissolve, Object3D, Active]
   }
 };

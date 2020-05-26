@@ -21,13 +21,21 @@ UIMaterial.map.flipY = false;
 export var textures = {};
 
 const textureURLs = [
-  'metal.jpg', 'rubber.png', 'wood.png', 'floor.png',
-  'target.png', 'cannon.jpg', 'ball.png', 'wood_spec.jpg',
-  'cannon_spec.jpg', 'metal_spec.jpg'];
+  "metal.jpg",
+  "rubber.png",
+  "wood.png",
+  "floor.png",
+  "target.png",
+  "cannon.jpg",
+  "ball.png",
+  "wood_spec.jpg",
+  "cannon_spec.jpg",
+  "metal_spec.jpg",
+  "arrow.png"
+];
 for (let i = 0; i < textureURLs.length; i++) {
   let tex = new THREE.TextureLoader().load(`assets/textures/${textureURLs[i]}`);
   tex.encoding = THREE.sRGBEncoding;
   tex.flipY = false;
   textures[textureURLs[i]] = tex;
 }
-

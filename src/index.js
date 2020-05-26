@@ -15,8 +15,7 @@ import {
   GLTFLoader,
   Transform,
   Visible,
-  WebGLRendererContext,
-  FTTAnalizable
+  WebGLRendererContext
 } from "./Components/components.js";
 
 //import WebXRPolyfill from "webxr-polyfill";
@@ -36,12 +35,12 @@ import {
   ElementSystem,
   GameStateSystem,
   LevelManager,
-  RotatingSystem,
   CollisionSystem,
   RaycasterSystem,
   UISystem,
   SoundsSystem,
-  GameplaySystem
+  GameplaySystem,
+  LaneSystem
 } from "./Systems/systems.mjs";
 
 import {
@@ -55,8 +54,7 @@ import {
   SoundSystem,
   InputSystem,
   Text,
-  initialize,
-  Active
+  initialize
 } from "ecsy-three";
 import { Vector3 } from "three";
 
@@ -100,6 +98,7 @@ function initGame() {
     .registerSystem(GameplaySystem)
     .registerSystem(GeometrySystem)
     .registerSystem(GLTFLoaderSystem)
+    .registerSystem(LaneSystem)
     .registerSystem(AudioGeneratorSystem);
 
   let data = initialize(world, { vr: true });
@@ -122,7 +121,7 @@ function initGame() {
   init(data);
 
   function init(data) {
-    scene.fog = new THREE.FogExp2(new THREE.Color(0x5ac5dc), 0.05);
+    // scene.fog = new THREE.FogExp2(new THREE.Color(0x5ac5dc), 0.05);
 
     scene.add(new THREE.HemisphereLight(0xcccccc, 0x707070));
 
@@ -136,58 +135,14 @@ function initGame() {
     light.shadow.mapSize.set(4096, 4096);
     scene.add(light);
 
-    let radius = 10;
-    let segments = 2;
-    let height = 10;
-    var geometry = new THREE.CylinderBufferGeometry(
-      radius,
-      radius,
-      height,
-      30,
-      20,
-      true,
-      0,
-      Math.PI
-    );
-    geometry.rotateY(Math.PI / 2);
-    geometry.translate(0, height / 2, 0);
-    var material = new THREE.MeshPhongMaterial({
-      color: 0x4444ff,
-      side: THREE.DoubleSide,
-      flatShading: true,
-      wireframe: true
-    });
-    var cylinder = new THREE.Mesh(geometry, material);
-    scene.add(cylinder);
-    window.scene = scene;
-
     //scene.add( new THREE.CameraHelper( light.shadow.camera ) );
 
     window.world = world;
 
     createScene(data);
 
-    // var listener = new THREE.AudioListener();
-
-    // var audio = new THREE.Audio(listener);
-
-    // var mediaElement = new Audio(
-    //   "assets/376737_Skullbeatz___Bad_Cat_Maste.mp3"
-    // );
-    // mediaElement.loop = true;
-    // mediaElement.play();
-
     document.body.addEventListener("click", () => {
       world.getSystem(GameStateSystem).playGame();
-    });
-
-    // audio.setMediaElementSource(mediaElement);
-
-    // var fftSize = 128;
-    // window.analyser = new THREE.AudioAnalyser(audio, fftSize);
-
-    world.createEntity("AudioGeneratorSystem").addComponent(FTTAnalizable, {
-      size: 256
     });
 
     // let startButton = world
@@ -240,23 +195,6 @@ function initGame() {
       .addComponent(Parent, { value: data.entities.scene })
       .addComponent(Visible, { value: true });
 
-    // Create a pads pool
-    // const SIZE = 5;
-    // for (var i=0; i<SIZE*SIZE; i++) {
-    //   var geometry = new THREE.BoxBufferGeometry( 1.5, 1.5, 1 );
-    //   var material = new THREE.MeshBasicMaterial( { color: "#FFFFFF" } );
-    //   var mesh = new THREE.Mesh( geometry, material );
-    //   var pad = world.createEntity();
-    //   pad
-    //     .addComponent(FTTUpdatable)
-    //     .addComponent(Object3D, {
-    //         value: mesh
-    //     })
-    //     .addComponent(Transform)
-    //     .addComponent(Parent, { value: world.entityManager.getEntityByName("playingGroup") })
-    //     .addComponent(Active);
-    // }
-
     // Scene
     world
       .createEntity("levelGroup")
@@ -267,14 +205,13 @@ function initGame() {
     world
       .createEntity()
       .addComponent(GLTFLoader, {
-        url: "assets/models/set.glb",
+        url: "assets/models/set1.glb",
         onLoaded: model => {
-          const cloudsMaterial = model.getObjectByName("clouds").material;
-          cloudsMaterial.transparent = true;
-          cloudsMaterial.fog = false;
           const skyMaterial = model.getObjectByName("sky").material;
           skyMaterial.fog = false;
-          //model.getObjectByName('floor').receiveShadow = true;
+          model.getObjectByName("floor").receiveShadow = true;
+          const floorMaterial = model.getObjectByName("floor").material;
+          floorMaterial.fog = false;
         }
       })
       .addComponent(Parent, { value: data.entities.scene });

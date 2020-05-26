@@ -11,7 +11,8 @@ import {
   Missed,
   Level,
   GameState,
-  Active
+  Active,
+  Pad
 } from "../Components/components.js";
 import { LevelManager } from "../Systems/systems.mjs";
 
@@ -142,6 +143,11 @@ export class GameStateSystem extends System {
         type: 1,
         speed: 2
       });
+      let lane = pad.getComponent(Pad).lane;
+      lane.addComponent(Dissolve, {
+        type: 0,
+        speed: 2
+      });
 
       let sounds = pad.getComponent(Sounds);
       sounds.playSound("hit");
@@ -162,6 +168,11 @@ export class GameStateSystem extends System {
 
     this.queries.padsMissed.added.forEach(pad => {
       pad.addComponent(Dissolve, {
+        type: 0,
+        speed: 2
+      });
+      let lane = pad.getComponent(Pad).lane;
+      lane.addComponent(Dissolve, {
         type: 0,
         speed: 2
       });

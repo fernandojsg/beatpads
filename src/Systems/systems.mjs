@@ -9,3 +9,4 @@ export { AudioGeneratorSystem } from "./AudioGeneratorSystem.js";
 export { GameplaySystem } from "./GameplaySystem.js";
 export { CollisionSystem } from "./CollisionSystem.js";
 export { SoundsSystem } from "./SoundsSystem.js";
+export { LaneSystem } from "./LaneSystem.js";

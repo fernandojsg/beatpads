@@ -61,9 +61,7 @@ const elementTypes = [
     draggable: false,
     scale: 0.3,
     sound: "",
-    material: new THREE.MeshLambertMaterial({
-      map: Materials.textures["floor.png"]
-    })
+    material: new THREE.MeshLambertMaterial()
   }
 ];
 
@@ -101,12 +99,13 @@ export class ElementSystem extends System {
           let d = Math.abs(max.z - min.z);
 
           mesh.material = config.material.clone();
+          mesh.material.alphTest = 0.5;
 
           entity.addComponent(Shape, {
             primitive: "box",
-            width: w,
-            height: h,
-            depth: d
+            width: w / 2,
+            height: h / 2,
+            depth: d / 2
           });
 
           entity.addComponent(Sounds, {

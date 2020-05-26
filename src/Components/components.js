@@ -1,6 +1,5 @@
 import * as THREE from "three";
 import { TagComponent } from "ecsy";
-import { Vector3 } from "three";
 
 export {
   Active,
@@ -58,7 +57,7 @@ export class Element {
   reset() {}
 }
 
-export class FTTAnalizable {
+export class FFTAnalizable {
   constructor() {
     this.reset();
   }
@@ -68,13 +67,25 @@ export class FTTAnalizable {
   }
 }
 
-export class FTTUpdatable {
+export class FFTUpdatable {
   constructor() {
     this.reset();
   }
 
   reset() {
     this.value = false;
+  }
+}
+
+export class FFTVisualizable {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.width = 0;
+    this.height = 0;
+    this.context = null;
   }
 }
 
@@ -153,7 +164,13 @@ export class Floor extends TagComponent {}
 //-----------------
 
 export class Pad {
-  constructor() {}
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.lane = null;
+  }
 }
 
 export class Sounds {
@@ -181,5 +198,6 @@ export class Moving {
     this.value = new THREE.Vector3(0, 0, 0);
   }
 }
+export class Lane extends TagComponent {}
 export class Collided extends TagComponent {}
 export class Missed extends TagComponent {}

@@ -1,5 +1,10 @@
 import { System } from "ecsy";
-import { Element, Dissolve, Object3D } from "../Components/components.js";
+import {
+  Element,
+  Dissolve,
+  Object3D,
+  Active
+} from "../Components/components.js";
 
 /**
  * This system interates on `Elements` with the `Disolve` component on them
@@ -37,7 +42,9 @@ export class DissolveSystem extends System {
 
       dissolve.value -= delta * dissolve.speed;
       if (dissolve.value <= 0) {
-        entity.remove(); // @todo Take this out or at least put a condition on the dissolve element
+        entity.removeComponent(Dissolve);
+        entity.removeComponent(Active);
+        object.material.transparent = false;
       }
     }
   }
@@ -45,6 +52,6 @@ export class DissolveSystem extends System {
 
 DissolveSystem.queries = {
   entities: {
-    components: [Element, Dissolve, Object3D]
+    components: [Element, Dissolve, Object3D, Active]
   }
 };

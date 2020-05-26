@@ -6,7 +6,8 @@ import {
   ControllerConnected,
   Missed,
   Collided,
-  Element
+  Element,
+  Moving
 } from "../Components/components.js";
 
 let worldPosHand = new THREE.Vector3();
@@ -34,6 +35,7 @@ export class CollisionSystem extends System {
           radiusSum * radiusSum
         ) {
           pad.addComponent(Collided);
+          pad.removeComponent(Moving);
         }
       }
     }
@@ -42,7 +44,7 @@ export class CollisionSystem extends System {
 
 CollisionSystem.queries = {
   pads: {
-    components: [Element, Object3D, Not(Missed), Not(Collided)] // @todo Change for Active instead of two Not()
+    components: [Element, Object3D, Not(Missed), Not(Collided), Moving] // @todo Change for Active instead of two Not()
   },
   controllers: {
     components: [VRController, Object3D, ControllerConnected]

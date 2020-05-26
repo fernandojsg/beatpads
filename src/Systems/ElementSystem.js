@@ -59,7 +59,7 @@ const elementTypes = [
     model: "static",
     restitution: 0.05,
     draggable: false,
-    scale: 0.2,
+    scale: 0.3,
     sound: "",
     material: new THREE.MeshLambertMaterial({
       map: Materials.textures["floor.png"]
@@ -122,6 +122,7 @@ export class ElementSystem extends System {
             }
           });
 
+          mesh.visible = false;
           entity.getMutableComponent(Object3D).value = mesh;
         }
       });

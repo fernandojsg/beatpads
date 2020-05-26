@@ -10,7 +10,8 @@ import {
   Collided,
   Missed,
   Level,
-  GameState
+  GameState,
+  Active
 } from "../Components/components.js";
 import { LevelManager } from "../Systems/systems.mjs";
 
@@ -141,6 +142,7 @@ export class GameStateSystem extends System {
         type: 1,
         speed: 2
       });
+
       let sounds = pad.getComponent(Sounds);
       sounds.playSound("hit");
 
@@ -154,20 +156,6 @@ export class GameStateSystem extends System {
       if (gameState.combo > 8) {
         gameState.combo = 8;
       }
-
-      const object3D = pad.getComponent(Object3D).value;
-      var tween = new TWEEN.Tween(object3D.position)
-        .to(
-          {
-            x: object3D.position.x,
-            y: object3D.position.y,
-            z: object3D.position.z - 1
-          },
-          500
-        )
-        .onUpdate(() => {})
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .start();
 
       this.updateTexts(gameState);
     });

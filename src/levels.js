@@ -6,12 +6,16 @@ const STATIC = 3;
 export const levels = [
   // 1
   {
+    sizeX: 5,
+    sizeY: 5,
+    rate: 10,
+    padSize: 0.3,
+    song: "assets/376737_Skullbeatz___Bad_Cat_Maste.mp3",
+    avgDb: 100,
+    speed: 4,
     angle: 40,
     height: 3,
     top: 1,
-    blocks: [
-      {
-      }
-    ]
+    blocks: [{}]
   }
 ];

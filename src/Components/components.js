@@ -62,12 +62,9 @@ export class FTTAnalizable {
   constructor() {
     this.reset();
   }
-  
+
   reset() {
-    this.url = null;
-    this.size = 128;
-    this.sliceSize = 64;
-    this.minDb = 100;
+    this.value = 128;
   }
 }
 
@@ -75,12 +72,9 @@ export class FTTUpdatable {
   constructor() {
     this.reset();
   }
-  
+
   reset() {
-    this.mesh = null;
-    this.index = 0;
-    this.moving = false;
-    this.initialPos = new Vector3(0, 0, 0);
+    this.value = false;
   }
 }
 
@@ -178,5 +172,14 @@ export class Sounds {
   }
 }
 
+export class Moving {
+  constructor() {
+    this.reset();
+  }
+
+  reset() {
+    this.value = new THREE.Vector3(0, 0, 0);
+  }
+}
 export class Collided extends TagComponent {}
 export class Missed extends TagComponent {}

@@ -81,7 +81,6 @@ function initGame() {
   world = new World();
 
   world
-    .registerSystem(AudioGeneratorSystem)
     .registerSystem(InputSystem)
     .registerSystem(LevelManager)
     .registerSystem(AnimationSystem)
@@ -100,7 +99,8 @@ function initGame() {
     .registerSystem(TextGeometrySystem)
     .registerSystem(GameplaySystem)
     .registerSystem(GeometrySystem)
-    .registerSystem(GLTFLoaderSystem);
+    .registerSystem(GLTFLoaderSystem)
+    .registerSystem(AudioGeneratorSystem);
 
   let data = initialize(world, { vr: true });
 
@@ -177,10 +177,9 @@ function initGame() {
     // mediaElement.loop = true;
     // mediaElement.play();
 
-    // document.body.addEventListener("click", () => {
-    //   console.log("Playing");
-    //   mediaElement.play();
-    // });
+    document.body.addEventListener("click", () => {
+      world.getSystem(GameStateSystem).playGame();
+    });
 
     // audio.setMediaElementSource(mediaElement);
 
@@ -188,9 +187,7 @@ function initGame() {
     // window.analyser = new THREE.AudioAnalyser(audio, fftSize);
 
     world.createEntity("AudioGeneratorSystem").addComponent(FTTAnalizable, {
-      url: "assets/376737_Skullbeatz___Bad_Cat_Maste.mp3",
-      size: 256,
-      minDb: 100
+      size: 256
     });
 
     // let startButton = world

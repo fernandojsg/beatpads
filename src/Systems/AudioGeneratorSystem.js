@@ -128,6 +128,9 @@ export class AudioGeneratorSystem extends System {
           "Pads pool size: " + this.queries.availablePads.results.length
         );
         var entity = this.queries.availablePads.results[0];
+        console.log(
+          "Available lanes pool size: " + this.queries.availableLanes.results.length
+        );
         var laneEntity = this.queries.availableLanes.results[0];
         if (!entity || !laneEntity) {
           return;
@@ -137,7 +140,7 @@ export class AudioGeneratorSystem extends System {
         laneEntity.addComponent(Active);
 
         var laneObject = laneEntity.getMutableComponent(Object3D);
-        laneObject.value.visible = true;
+        // laneObject.value.visible = true;
 
         var object = entity.getMutableComponent(Object3D);
         object.value.visible = true;

@@ -39,7 +39,7 @@ export class GameStateSystem extends System {
     this.world.getSystem(LevelManager).clearCurrentLevel();
     this.world.entityManager
       .getEntityByName("singleton")
-      .getMutableComponent(Level).value = 1;
+      .getMutableComponent(Level).value = 2;
 
     this.queries.raycasters.results.forEach(entity => {
       entity.getMutableComponent(Raycaster).layerMask = 4;
@@ -174,7 +174,7 @@ export class GameStateSystem extends System {
       let lane = pad.getComponent(Pad).lane;
       lane.addComponent(Dissolve, {
         type: 0,
-        speed: 2
+        speed: 1
       });
 
       let sounds = pad.getComponent(Sounds);

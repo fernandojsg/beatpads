@@ -3,8 +3,7 @@ import {
   Element,
   Dissolve,
   Object3D,
-  Active,
-  Pad
+  Active
 } from "../Components/components.js";
 
 /**
@@ -49,10 +48,6 @@ export class DissolveSystem extends System {
       if (dissolve.value <= 0) {
         object.material.opacity = 1;
         entity.removeComponent(Dissolve);
-        if (entity.hasComponent(Pad)) {
-          let lane = entity.getComponent(Pad).lane;
-          lane.removeComponent(Active);
-        }
         entity.removeComponent(Active);
         object.material.transparent = false;
       }

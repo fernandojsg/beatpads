@@ -41,7 +41,7 @@ export class GameplaySystem extends System {
       }
     }
 
-    // Reset Pads when iactive
+    // Reset Pads when inactive
     this.queries.inactivePads.added.forEach(entity => {
       if (!entity.getComponent(Object3D)) {
         return;
@@ -89,7 +89,7 @@ GameplaySystem.queries = {
     }
   },
   dissolvingPads: {
-    components: [FFTUpdatable, Object3D, Dissolve],
+    components: [FFTUpdatable, Object3D, Dissolve, Not(Missed)],
     listen: {
       added: true
     }

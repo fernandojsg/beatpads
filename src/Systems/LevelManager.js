@@ -88,8 +88,8 @@ export class LevelManager extends System {
 
       // Create the lanes pool
       var geometry = new THREE.PlaneGeometry(
-        level.padSize,
-        level.padSize * 10,
+        level.padSize * 2,
+        level.padSize * 20,
         1
       );
       let texture = Materials.textures["arrow.png"];
@@ -103,6 +103,7 @@ export class LevelManager extends System {
         alphaTest: 0.5
       });
       var mesh = new THREE.Mesh(geometry, material);
+      mesh.visible = false;
       this.world
         .createEntity()
         .addComponent(Lane)

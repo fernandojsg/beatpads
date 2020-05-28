@@ -3,17 +3,15 @@ import * as THREE from "three";
 import { World } from "ecsy";
 import {
   GameState,
-  Geometry,
   Sound,
   Level,
-  Object3D,
-  Parent,
+  Object3DComponent,
   Floor,
   Scene,
   Position,
   Shape,
+  ParentOnAdd,
   GLTFLoader,
-  Transform,
   Visible,
   WebGLRendererContext
 } from "./Components/components.js";
@@ -44,7 +42,6 @@ import {
 } from "./Systems/systems.mjs";
 
 import {
-  GeometrySystem,
   GLTFLoaderSystem,
   TextGeometrySystem,
   VRControllerSystem,
@@ -54,6 +51,7 @@ import {
   SoundSystem,
   InputSystem,
   Text,
+  ECSYThreeWorld,
   initialize
 } from "ecsy-three";
 import { Vector3 } from "three";
@@ -76,10 +74,11 @@ function detectWebXR() {
 function initGame() {
   detectWebXR();
 
-  world = new World();
+  world = new ECSYThreeWorld();
 
   world
     .registerSystem(InputSystem)
+    .registerSystem(LaneSystem)
     .registerSystem(LevelManager)
     .registerSystem(AnimationSystem)
     .registerSystem(RaycasterSystem)
@@ -96,14 +95,12 @@ function initGame() {
     .registerSystem(SDFTextSystem)
     .registerSystem(TextGeometrySystem)
     .registerSystem(GameplaySystem)
-    .registerSystem(GeometrySystem)
     .registerSystem(GLTFLoaderSystem)
-    .registerSystem(LaneSystem)
     .registerSystem(AudioGeneratorSystem);
 
   let data = initialize(world, { vr: true });
 
-  var scene = data.entities.scene.getComponent(Object3D).value;
+  var scene = data.entities.scene.getComponent(Object3DComponent).value;
   window.entityScene = data.entities.scene;
 
   let level = urlParams.has("level") ? parseInt(urlParams.get("level")) : 0;
@@ -191,30 +188,28 @@ function initGame() {
 
     let playingGroup = world
       .createEntity("playingGroup")
-      .addComponent(Object3D, { value: new THREE.Group() })
-      .addComponent(Parent, { value: data.entities.scene })
+      .addObject3DComponents(new THREE.Group(), data.entities.scene)
       .addComponent(Visible, { value: true });
 
     // Scene
     world
       .createEntity("levelGroup")
-      .addComponent(Object3D, { value: new THREE.Group() })
-      .addComponent(Parent, { value: playingGroup })
+      .addObject3DComponents(new THREE.Group(), playingGroup)
       .addComponent(Visible, { value: true });
 
-    world
-      .createEntity()
-      .addComponent(GLTFLoader, {
-        url: "assets/models/set1.glb",
-        onLoaded: model => {
-          const skyMaterial = model.getObjectByName("sky").material;
-          skyMaterial.fog = false;
-          model.getObjectByName("floor").receiveShadow = true;
-          const floorMaterial = model.getObjectByName("floor").material;
-          floorMaterial.fog = false;
-        }
-      })
-      .addComponent(Parent, { value: data.entities.scene });
+    window.data = data;
+
+    world.createEntity().addComponent(GLTFLoader, {
+      url: "assets/models/set1.glb",
+      parent: data.entities.scene,
+      onLoaded: model => {
+        const skyMaterial = model.getObjectByName("sky").material;
+        skyMaterial.fog = false;
+        model.getObjectByName("floor").receiveShadow = true;
+        const floorMaterial = model.getObjectByName("floor").material;
+        floorMaterial.fog = false;
+      }
+    });
 
     // world
     //   .createEntity("help")
@@ -233,8 +228,11 @@ function initGame() {
 
     world
       .createEntity("stats")
-      .addComponent(Text, getTextParameters("", "#000000", 0.5, "center"))
-      .addComponent(Parent, { value: data.entities.scene })
+      //.addComponent(Text, getTextParameters("", "#000000", 0.5, "center"))
+      .addComponent(Text, { color: "#fff" })
+      .addComponent(GLTFLoader, { url: "test.glb" })
+      //.addComponent(Parent, { value: data.entities.scene })
+      .addComponent(ParentOnAdd, { value: data.entities.scene })
       .addComponent(Position, { value: new Vector3(3, 5, -6) })
       .addComponent(Visible, { value: true });
 
@@ -264,7 +262,7 @@ function initGame() {
             .addComponent(ParentObject3D, { value: model.children[0] })
             .addComponent(Position, { value: new Vector3(0, 0, 0.01) });
 
-          //model.children[0].lookAt(data.entities.camera.getComponent(Object3D).value);
+          //model.children[0].lookAt(data.entities.camera.getComponent(Object3DComponent).value);
         }
       })
       .addComponent(Parent, { value: playingGroup })
@@ -346,7 +344,7 @@ function initGame() {
             .addComponent(ParentObject3D, { value: model.children[0] })
             .addComponent(Position, { value: new Vector3(0.36, -0.13, 0.01) });
 
-          //model.children[0].lookAt(data.entities.camera.getComponent(Object3D).value);
+          //model.children[0].lookAt(data.entities.camera.getComponent(Object3DComponent).value);
         }
       })
       .addComponent(Parent, { value: data.entities.scene })
@@ -357,14 +355,16 @@ function initGame() {
   }
 
   function createFloor(data) {
+    let mesh = new THREE.Mesh(
+      new THREE.BoxBufferGeometry(100, 0.1, 100),
+      new THREE.MeshBasicMaterial({ color: 0xffff00 })
+    );
+
+    mesh.position.y = -0.05;
+
     world
       .createEntity()
-      .addComponent(Geometry, {
-        primitive: "box",
-        width: 100,
-        height: 0.1,
-        depth: 100
-      })
+      .addObject3DComponents(mesh, data.entities.scene)
       .addComponent(Shape, {
         primitive: "box",
         width: 100,
@@ -372,13 +372,8 @@ function initGame() {
         depth: 100
       })
       .addComponent(Visible, { value: false })
-      .addComponent(Transform, {
-        position: { x: 0, y: -0.05, z: 0 },
-        rotation: { x: 0, y: 0, z: 0 }
-      })
       .addComponent(Floor)
-      .addComponent(Sound, { url: "assets/sounds/miss.ogg" })
-      .addComponent(Parent, { value: data.entities.scene });
+      .addComponent(Sound, { url: "assets/sounds/miss.ogg" });
   }
 
   function getTextParameters(text, color, size, align) {

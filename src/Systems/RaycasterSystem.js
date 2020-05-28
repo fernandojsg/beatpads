@@ -3,7 +3,7 @@ import * as THREE from "three";
 import {
   Raycaster,
   RaycastReceiver,
-  Object3D,
+  Object3DComponent,
   InputState
 } from "../Components/components.js";
 
@@ -29,7 +29,7 @@ export class RaycasterSystem extends System {
           return (mask & raycasterComponent.layerMask) !== 0;
         })
         .map(entity => {
-          var object = entity.getComponent(Object3D).value;
+          var object = entity.getComponent(Object3DComponent).value;
           object.traverse(child => {
             child.userData.entity = entity;
           });
@@ -43,7 +43,7 @@ export class RaycasterSystem extends System {
       let raycast = raycasterComponent.value;
 
       var tempMatrix = new THREE.Matrix4();
-      var holder = raycaster.getComponent(Object3D).value.children[0];
+      var holder = raycaster.getComponent(Object3DComponent).value.children[0];
       tempMatrix.identity().extractRotation(holder.matrixWorld);
 
       raycast.ray.origin.setFromMatrixPosition(holder.matrixWorld);
@@ -56,7 +56,7 @@ export class RaycasterSystem extends System {
       let intersections = raycast.intersectObjects(objects, true);
 
       //inputState.
-      let obj = raycaster.getComponent(Object3D).value;
+      let obj = raycaster.getComponent(Object3DComponent).value;
       let vrcontrollerGroup = obj ? obj.children[0] : null; //@hack
       let controllerInputState = inputState.vrcontrollers.get(
         vrcontrollerGroup

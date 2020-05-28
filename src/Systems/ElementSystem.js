@@ -4,7 +4,7 @@ import {
   Element,
   GLTFLoader,
   Shape,
-  Object3D,
+  Object3DComponent,
   CollisionStart,
   Sounds
 } from "../Components/components.js";
@@ -81,6 +81,7 @@ export class ElementSystem extends System {
 
       entity.addComponent(GLTFLoader, {
         url: "assets/models/" + config.model + ".glb",
+        parent: window.data.entities.scene,
         onLoaded: model => {
           let mesh = model.children[0];
           let geometry = mesh.geometry;
@@ -122,7 +123,9 @@ export class ElementSystem extends System {
           });
 
           mesh.visible = false;
-          entity.getMutableComponent(Object3D).value = mesh;
+
+          // Just to skip the unneeded children group
+          entity.getMutableComponent(Object3DComponent).value = mesh;
         }
       });
     }

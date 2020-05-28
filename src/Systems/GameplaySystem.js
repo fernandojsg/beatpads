@@ -2,11 +2,10 @@ import { System, Not } from "ecsy";
 import {
   Element,
   Collided,
-  Transform,
   GLTFModel,
   Missed,
   Moving,
-  Object3D,
+  Object3DComponent,
   Level,
   FFTUpdatable,
   Active,
@@ -32,7 +31,7 @@ export class GameplaySystem extends System {
     const entities = this.queries.entities.results;
     for (let i = entities.length - 1; i >= 0; i--) {
       const entity = entities[i];
-      const object = entity.getMutableComponent(Object3D);
+      const object = entity.getMutableComponent(Object3DComponent);
 
       object.value.translateZ(delta * this.speed);
       if (object.value.position.z > 1) {
@@ -43,10 +42,10 @@ export class GameplaySystem extends System {
 
     // Reset Pads when inactive
     this.queries.inactivePads.added.forEach(entity => {
-      if (!entity.getComponent(Object3D)) {
+      if (!entity.getComponent(Object3DComponent)) {
         return;
       }
-      var object = entity.getComponent(Object3D).value;
+      var object = entity.getComponent(Object3DComponent).value;
       object.position.set(1, 1, 1);
       object.rotation.set(1, 1, 1);
       object.scale.set(1, 1, 1);
@@ -58,7 +57,7 @@ export class GameplaySystem extends System {
 
     // Animate the dissolving Pads
     this.queries.dissolvingPads.results.forEach(entity => {
-      const object = entity.getComponent(Object3D).value;
+      const object = entity.getComponent(Object3DComponent).value;
       object.translateZ(-delta * this.speed);
     });
   }
@@ -68,7 +67,7 @@ GameplaySystem.queries = {
   entities: {
     components: [
       Element,
-      Object3D,
+      Object3DComponent,
       GLTFModel,
       Not(Missed),
       Not(Collided),
@@ -83,13 +82,13 @@ GameplaySystem.queries = {
     }
   },
   inactivePads: {
-    components: [FFTUpdatable, Object3D, Not(Active)],
+    components: [FFTUpdatable, Object3DComponent, Not(Active)],
     listen: {
       added: true
     }
   },
   dissolvingPads: {
-    components: [FFTUpdatable, Object3D, Dissolve, Not(Missed)],
+    components: [FFTUpdatable, Object3DComponent, Dissolve, Not(Missed)],
     listen: {
       added: true
     }

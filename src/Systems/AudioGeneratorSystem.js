@@ -191,7 +191,6 @@ export class AudioGeneratorSystem extends System {
     this.visualAnalyser.getByteFrequencyData(this.data);
     this.queries.visualizer.results.forEach(entity => {
       let visualizer = entity.getComponent(FFTVisualizable);
-      let object = entity.getComponent(Object3DComponent);
       const context = visualizer.context;
       const width = visualizer.width;
       const height = visualizer.height;
@@ -204,7 +203,7 @@ export class AudioGeneratorSystem extends System {
         context.fillStyle = `hsl(${hue}, 100%, 50%)`;
         context.fillRect(i * barWidth, height - barHeight, barWidth, barHeight);
       }
-      object.value.material.map.needsUpdate = true;
+      entity.getObject3D().material.map.needsUpdate = true;
     });
   }
 }
@@ -252,5 +251,5 @@ AudioGeneratorSystem.queries = {
       removed: true,
       changed: true
     }
-  },
+  }
 };

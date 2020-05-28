@@ -1,12 +1,13 @@
 import { System } from "ecsy";
 import * as THREE from "three";
-import { Text, Position, Object3DComponent } from "ecsy-three";
+import { Text } from "ecsy-three";
 import {
   Level,
   LevelItem,
   Element,
   FFTAnalizable,
   FFTUpdatable,
+  ParentOnAdd,
   FFTVisualizable,
   Pad,
   Lane
@@ -76,8 +77,8 @@ export class LevelManager extends System {
         .addComponent(Element, {
           type: 3
         })
-        .addComponent(LevelItem);
-      // !!!! .addComponent(Parent, { value: parent });
+        .addComponent(LevelItem)
+        .addComponent(ParentOnAdd, { value: parent });
 
       // Create the lanes pool
       var geometry = new THREE.PlaneGeometry(
@@ -132,6 +133,7 @@ export class LevelManager extends System {
       transparent: true
     });
     var mesh = new THREE.Mesh(geometry, material);
+
     this.world
       .createEntity()
       .addComponent(FFTVisualizable, {
@@ -141,7 +143,7 @@ export class LevelManager extends System {
       })
       .addObject3DComponents(
         mesh,
-        window.data.scene // |fix
+        window.data.entities.scene // @fix!
       );
 
     mesh.position.y = height / 2;
@@ -149,6 +151,7 @@ export class LevelManager extends System {
 
     let mesh2 = mesh.clone();
     mesh2.scale.x = -1;
+    window.mesh2 = mesh2;
     this.world
       .createEntity()
       .addComponent(FFTVisualizable, {
@@ -158,11 +161,11 @@ export class LevelManager extends System {
       })
       .addObject3DComponents(
         mesh2,
-        window.data.scene // |fix
-      );
+        window.data.entities.scene // @fix!
+      )
 
     mesh2.position.y = height / 2;
-    mesh2.rotation.y = Math.PI;
+    mesh2.rotation.set(0, Math.PI, 0);
   }
 }
 

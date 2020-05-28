@@ -16,6 +16,9 @@ import {
   WebGLRendererContext
 } from "./Components/components.js";
 
+import * as COMPONENTS from "./Components/components.js";
+window.COMPONENTS = COMPONENTS;
+
 //import WebXRPolyfill from "webxr-polyfill";
 //const polyfill = new WebXRPolyfill();
 
@@ -228,13 +231,11 @@ function initGame() {
 
     world
       .createEntity("stats")
-      //.addComponent(Text, getTextParameters("", "#000000", 0.5, "center"))
-      .addComponent(Text, { color: "#fff" })
-      .addComponent(GLTFLoader, { url: "test.glb" })
-      //.addComponent(Parent, { value: data.entities.scene })
+      .addComponent(Text, getTextParameters("", "#000000", 0.5, "center"))
+      .addComponent(Visible, { value: true })
       .addComponent(ParentOnAdd, { value: data.entities.scene })
-      .addComponent(Position, { value: new Vector3(3, 5, -6) })
-      .addComponent(Visible, { value: true });
+      .addComponent(Position, { value: new Vector3(3, 5, -6) });
+
 
     /*
     const panelLevel = world

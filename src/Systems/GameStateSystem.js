@@ -5,7 +5,7 @@ import {
   Dissolve,
   Sounds,
   Raycaster,
-  Object3D,
+  Object3DComponent,
   Visible,
   Collided,
   Missed,
@@ -14,7 +14,19 @@ import {
   Active,
   Pad
 } from "../Components/components.js";
-import { LevelManager } from "../Systems/systems.mjs";
+import {
+  AudioGeneratorSystem,
+  CameraRigSystem,
+  DissolveSystem,
+  ElementSystem,
+  LevelManager,
+  CollisionSystem,
+  RaycasterSystem,
+  UISystem,
+  SoundsSystem,
+  GameplaySystem,
+  LaneSystem
+} from "../Systems/systems.mjs";
 
 /**
  * All the game state is controlled here:
@@ -47,7 +59,7 @@ export class GameStateSystem extends System {
     /*
     let panelInfoEntity = this.world.entityManager.getEntityByName("panelInfo");
     panelInfoEntity.addComponent(Play);
-    let panel = panelInfoEntity.getComponent(Object3D).value.children[0];
+    let panel = panelInfoEntity.getComponent(Object3DComponent).value.children[0];
 
     if (!panel.userData.oldPosition) {
       panel.userData.oldPosition = new THREE.Vector3();
@@ -88,7 +100,7 @@ export class GameStateSystem extends System {
     /*
     let panelInfoEntity = this.world.entityManager.getEntityByName("panelInfo");
     panelInfoEntity.addComponent(Stop);
-    let panel = panelInfoEntity.getComponent(Object3D);
+    let panel = panelInfoEntity.getComponent(Object3DComponent);
     if (panel) {
       panel = panel.value.children[0];
       if (panel.userData.oldPosition) {
@@ -113,6 +125,9 @@ export class GameStateSystem extends System {
     this.queries.gameState.results[0].getMutableComponent(
       GameState
     ).playing = false;
+    this.world.getSystem(AudioGeneratorSystem).stop();
+    this.world.getSystem(LaneSystem).stop();
+    this.world.getSystem(LevelManager).stop();
   }
 
   execute() {

@@ -7,7 +7,7 @@ import {
   FFTVisualizable,
   Level,
   Active,
-  Object3D,
+  Object3DComponent,
   GameState,
   Moving,
   Lane,
@@ -121,6 +121,7 @@ export class AudioGeneratorSystem extends System {
     this.analyser.getByteFrequencyData(this.data);
     const sum = this.data.reduce((a, b) => a + b, 0);
     const avg = sum / this.data.length || 0;
+
     if (this.prevAvg > avg && avg > this.level.avgDb) {
       if (this.deltaAccum > 1 / this.level.speed) {
         this.deltaAccum = 0;
@@ -139,10 +140,10 @@ export class AudioGeneratorSystem extends System {
         entity.addComponent(Active);
         laneEntity.addComponent(Active);
 
-        var laneObject = laneEntity.getMutableComponent(Object3D);
+        var laneObject = laneEntity.getMutableComponent(Object3DComponent);
         // laneObject.value.visible = true;
 
-        var object = entity.getMutableComponent(Object3D);
+        var object = entity.getMutableComponent(Object3DComponent);
         object.value.visible = true;
 
         var lanePos = this.findAvailableLane();
@@ -190,7 +191,6 @@ export class AudioGeneratorSystem extends System {
     this.visualAnalyser.getByteFrequencyData(this.data);
     this.queries.visualizer.results.forEach(entity => {
       let visualizer = entity.getComponent(FFTVisualizable);
-      let object = entity.getComponent(Object3D);
       const context = visualizer.context;
       const width = visualizer.width;
       const height = visualizer.height;
@@ -203,7 +203,7 @@ export class AudioGeneratorSystem extends System {
         context.fillStyle = `hsl(${hue}, 100%, 50%)`;
         context.fillRect(i * barWidth, height - barHeight, barWidth, barHeight);
       }
-      object.value.material.map.needsUpdate = true;
+      entity.getObject3D().material.map.needsUpdate = true;
     });
   }
 }
@@ -251,5 +251,5 @@ AudioGeneratorSystem.queries = {
       removed: true,
       changed: true
     }
-  },
+  }
 };

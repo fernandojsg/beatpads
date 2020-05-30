@@ -1,40 +1,6 @@
 import * as THREE from "three";
 import { TagComponent } from "ecsy";
-
-export {
-  Active,
-  Animation,
-  Camera,
-  CameraRig,
-  Colliding,
-  CollisionStart,
-  CollisionStop,
-  Draggable,
-  Dragging,
-  Environment,
-  ControllerConnected,
-  Geometry,
-  GLTFLoader,
-  GLTFModel,
-  InputState,
-  Material,
-  Object3D,
-  Parent,
-  ParentObject3D,
-  Play,
-  Position,
-  RenderPass,
-  Scale,
-  Scene,
-  Shape,
-  Sound,
-  Stop,
-  TextGeometry,
-  Transform,
-  Visible,
-  VRController,
-  WebGLRendererContext
-} from "ecsy-three";
+export * from "ecsy-three";
 
 export class LevelItem {
   reset() {}

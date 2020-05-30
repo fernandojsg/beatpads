@@ -6,10 +6,9 @@ import { Position, Text } from "ecsy-three";
 import {
   UI,
   Sound,
-  Parent,
   Button,
   RaycastReceiver,
-  Object3D
+  Object3DComponent
 } from "../Components/components.js";
 
 function setColor(object, color) {
@@ -26,87 +25,81 @@ export class UISystem extends System {
 
     const entities = this.queries.entities;
 
-    for (let i = 0; i < entities.results.length; i++) {
-      const entity = entities.results[i];
-      const component = entity.getComponent(UI);
-    }
-
     for (let i = 0; i < entities.added.length; i++) {
       const entity = entities.added[i];
-      const component = entity.getComponent(UI);
       const button = entity.getComponent(Button);
 
       //let child = this.world.createEntity();
       let child2 = this.world.createEntity();
 
-      let group = new THREE.Object3D();
-      entity.addComponent(Object3D, { value: group });
-      entity.addComponent(RaycastReceiver, {
-        layerMask: 4,
-        onHover: () => {},
-        onEnter: () => {
-          let obj = entity.getComponent(Object3D).value;
-          setColor(obj, 1);
-          var tween = new TWEEN.Tween(obj.scale)
-            .to(
-              {
-                x: 1.1,
-                y: 1.1,
-                z: 1.1
-              },
-              500
-            )
-            .onUpdate(() => {})
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .start();
-        },
-        onLeave: () => {
-          let obj = entity.getComponent(Object3D).value;
-          setColor(obj, 0.7);
-          var tween = new TWEEN.Tween(obj.scale)
-            .to(
-              {
-                x: 1,
-                y: 1,
-                z: 1
-              },
-              300
-            )
-            .onUpdate(() => {})
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .start();
-        },
-        onSelectStart: () => {
-          let obj = entity.getComponent(Object3D).value;
-          setColor(obj, 1);
-
-          setTimeout(() => {
+      entity
+        .addObject3DComponents(new THREE.Group())
+        .addComponent(RaycastReceiver, {
+          layerMask: 4,
+          onHover: () => {},
+          onEnter: () => {
+            let obj = entity.getComponent(Object3DComponent).value;
+            setColor(obj, 1);
+            var tween = new TWEEN.Tween(obj.scale)
+              .to(
+                {
+                  x: 1.1,
+                  y: 1.1,
+                  z: 1.1
+                },
+                500
+              )
+              .onUpdate(() => {})
+              .easing(TWEEN.Easing.Quadratic.Out)
+              .start();
+          },
+          onLeave: () => {
+            let obj = entity.getComponent(Object3DComponent).value;
             setColor(obj, 0.7);
-          }, 300);
+            var tween = new TWEEN.Tween(obj.scale)
+              .to(
+                {
+                  x: 1,
+                  y: 1,
+                  z: 1
+                },
+                300
+              )
+              .onUpdate(() => {})
+              .easing(TWEEN.Easing.Quadratic.Out)
+              .start();
+          },
+          onSelectStart: () => {
+            let obj = entity.getComponent(Object3DComponent).value;
+            setColor(obj, 1);
 
-          var tween = new TWEEN.Tween(obj.scale)
-            .to(
-              {
-                x: 1.2,
-                y: 1.2,
-                z: 1.2
-              },
-              100
-            )
-            .repeat(1)
-            //.delay(500)
-            .yoyo(true)
-            .easing(TWEEN.Easing.Quadratic.Out)
-            .start()
-            .onComplete(() => {
-              button.onClick && button.onClick();
-            });
+            setTimeout(() => {
+              setColor(obj, 0.7);
+            }, 300);
 
-          if (entity.hasComponent(Sound)) {
-            entity.getComponent(Sound).sound.play();
+            var tween = new TWEEN.Tween(obj.scale)
+              .to(
+                {
+                  x: 1.2,
+                  y: 1.2,
+                  z: 1.2
+                },
+                100
+              )
+              .repeat(1)
+              //.delay(500)
+              .yoyo(true)
+              .easing(TWEEN.Easing.Quadratic.Out)
+              .start()
+              .onComplete(() => {
+                button.onClick && button.onClick();
+              });
+
+            if (entity.hasComponent(Sound)) {
+              entity.getComponent(Sound).sound.play();
+            }
           }
-        }
-      });
+        });
 
       child2
         .addComponent(Text, {
@@ -120,8 +113,8 @@ export class UISystem extends System {
           lineHeight: 0,
           text: button.text
         })
-        .addComponent(Position, { value: new THREE.Vector3(0, 0.03, 0.01) })
-        .addComponent(Parent, { value: entity });
+        .addComponent(Position, { value: new THREE.Vector3(0, 0.03, 0.01) });
+      //.addComponent(Parent, { value: entity });
     }
   }
 }

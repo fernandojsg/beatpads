@@ -1,27 +1,28 @@
 import { System, Not } from "ecsy";
 import * as THREE from "three";
 import { levels } from "../levels.js";
-import { Active, Lane, Object3D, Dissolve } from "../Components/components";
+import { Active, Lane, Object3DComponent, Dissolve } from "../Components/components";
 
 export class LaneSystem extends System {
   execute(delta, time) {
     this.queries.lanes.added.forEach(entity => {
-      const object = entity.getComponent(Object3D);
+      const object = entity.getComponent(Object3DComponent);
       object.value.visible = false;
     });
 
     this.queries.activeLanes.added.forEach(entity => {
-      const object = entity.getComponent(Object3D);
+      console.log("Showing lane!");
+      const object = entity.getComponent(Object3DComponent);
       object.value.visible = true;
     });
     this.queries.activeLanes.results.forEach(entity => {
-      const object = entity.getComponent(Object3D);
+      const object = entity.getComponent(Object3DComponent);
       object.value.material.map.offset.y += -delta;
     });
 
     this.queries.inactiveLanes.added.forEach(entity => {
       console.log("Hidding inactive lane");
-      const object = entity.getComponent(Object3D);
+      const object = entity.getComponent(Object3DComponent); // true as a hack as it could be removed the system
       object.value.visible = false;
     });
 
@@ -29,7 +30,7 @@ export class LaneSystem extends System {
     for (let i = 0; i < dissolvingLanes.length; i++) {
       var entity = dissolvingLanes[i];
       var dissolve = entity.getMutableComponent(Dissolve);
-      var mesh = entity.getComponent(Object3D).value;
+      var mesh = entity.getComponent(Object3DComponent).value;
       let material = mesh.material;
       if (!material) {
         continue;
@@ -62,24 +63,24 @@ export class LaneSystem extends System {
 
 LaneSystem.queries = {
   lanes: {
-    components: [Lane, Object3D],
+    components: [Lane, Object3DComponent],
     listen: {
       added: true
     }
   },
   activeLanes: {
-    components: [Lane, Object3D, Active],
+    components: [Lane, Object3DComponent, Active],
     listen: {
       added: true
     }
   },
   inactiveLanes: {
-    components: [Lane, Object3D, Not(Active)],
+    components: [Lane, Object3DComponent, Not(Active)],
     listen: {
       added: true
     }
   },
   dissolvingLanes: {
-    components: [Lane, Dissolve, Object3D, Active]
+    components: [Lane, Dissolve, Object3DComponent, Active]
   }
 };

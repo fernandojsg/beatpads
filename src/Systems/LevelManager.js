@@ -1,21 +1,15 @@
 import { System } from "ecsy";
 import * as THREE from "three";
-import { Text, Position, Object3D } from "ecsy-three";
+import { Text } from "ecsy-three";
 import {
   Level,
-  Transform,
-  GLTFLoader,
-  GameState,
-  Active,
-  Parent,
-  Animation,
   LevelItem,
   Element,
   FFTAnalizable,
   FFTUpdatable,
+  ParentOnAdd,
   FFTVisualizable,
   Pad,
-  Mesh,
   Lane
 } from "../Components/components.js";
 import { levels } from "../levels.js";
@@ -84,7 +78,7 @@ export class LevelManager extends System {
           type: 3
         })
         .addComponent(LevelItem)
-        .addComponent(Parent, { value: parent });
+        .addComponent(ParentOnAdd, { value: parent });
 
       // Create the lanes pool
       var geometry = new THREE.PlaneGeometry(
@@ -104,12 +98,12 @@ export class LevelManager extends System {
       });
       var mesh = new THREE.Mesh(geometry, material);
       mesh.visible = false;
+
       this.world
         .createEntity()
         .addComponent(Lane)
-        .addComponent(Object3D, { value: mesh })
         .addComponent(LevelItem)
-        .addComponent(Parent, { value: parent });
+        .addObject3DComponents(mesh, parent);
     }
   }
 
@@ -139,6 +133,7 @@ export class LevelManager extends System {
       transparent: true
     });
     var mesh = new THREE.Mesh(geometry, material);
+
     this.world
       .createEntity()
       .addComponent(FFTVisualizable, {
@@ -146,14 +141,17 @@ export class LevelManager extends System {
         width: canvas.width,
         height: canvas.height
       })
-      .addComponent(Object3D, { value: mesh })
-      .addComponent(Transform, {
-        position: { x: 0, y: height / 2, z: 0 },
-        rotation: { x: 0, y: Math.PI, z: 0 }
-      })
-      .addComponent(Parent, { value: window.entityScene });
+      .addObject3DComponents(
+        mesh,
+        window.data.entities.scene // @fix!
+      );
+
+    mesh.position.y = height / 2;
+    mesh.rotation.y = Math.PI;
+
     let mesh2 = mesh.clone();
     mesh2.scale.x = -1;
+    window.mesh2 = mesh2;
     this.world
       .createEntity()
       .addComponent(FFTVisualizable, {
@@ -161,12 +159,13 @@ export class LevelManager extends System {
         width: canvas.width,
         height: canvas.height
       })
-      .addComponent(Object3D, { value: mesh2 })
-      .addComponent(Transform, {
-        position: { x: 0, y: height / 2, z: 0 },
-        rotation: { x: 0, y: Math.PI, z: 0 }
-      })
-      .addComponent(Parent, { value: window.entityScene });
+      .addObject3DComponents(
+        mesh2,
+        window.data.entities.scene // @fix!
+      )
+
+    mesh2.position.y = height / 2;
+    mesh2.rotation.set(0, Math.PI, 0);
   }
 }
 
